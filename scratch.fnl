@@ -38,7 +38,6 @@
 ;;     newtab))
 (fn cons [head tail]
   [head (table.unpack tail)])
-
 (fn map [func lst]
   (icollect [_ val (ipairs lst)]
     (func val)))
@@ -72,6 +71,43 @@
       (tset t counter counter)
       (set counter (inc counter)))
     t))
+
+
+;; (fn gennums [n]
+;;   (if (> 1 n) (math.random) (gennums (- n 1))))
+
+;; doesn't work
+;; (fn gennums2 [t]
+;;   (case t
+;;     n            (if (> n 0)
+;;                      (gennums2 n []) ;; start
+;;                      [])
+;;     [n []]       (.. [(math.random) (gennums2 (- n 1))])))
+
+;; doesn't work
+;; (fn revl [t]
+;;   (match t
+;;     [head tail] (revl [tail]) head
+;;     [n] [n]))
+
+;; can't get these unnested
+(fn rev2 [l]
+  (match l
+    [head & tail] [(rev1 tail) head]
+    [] []))
+
+(fn rev [l]
+  (let [rt {}]
+    (match l
+      [head & tail] (do (table.insert rt (rev tail))
+                        (table.insert rt head) rt)
+      [] [])))
+
+
+
+
+
+
 
 ;; (macro when-let1 [bindings & body]
 ;;   (let [form (. bindings 1)
