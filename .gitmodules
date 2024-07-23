@@ -1,0 +1,3 @@
+[submodule "racket-schemer"]
+	path = racket-schemer
+	url = git@github.com:bmitc/the-little-schemer.git

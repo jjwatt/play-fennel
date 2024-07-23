@@ -18,26 +18,45 @@
 (fn map [func lst]
   (icollect [_ val (ipairs lst)]
     (func val)))
+;; (fn atom? [t]
+;;   (and (not= (type t) :nil) (not= (type t) :table)))
 (fn atom? [t]
-  (and (not= (type t) :nil) (not= (type t) :table)))
+  (not= (type t) :table))
+;; "safe" list
+(fn list? [t]
+  (and (not (atom? t))
+       (not= (type t) :nil)
+       (= (type t) :table)))
 (fn pair? [t]
-  (and (not= (type t) :nil) (not (atom? t))))
-(fn empty? [t]
-             (if (= nil (next t))
-                 true
-                 false))
-;; doesn't handle nil
-;; (fn lat? [l]
-;;   (if (empty? l)
-;;       true
-;;       (if (not (atom? (car l)))
-;;           false
-;;           (lat? (cdr l)))))
-
-;; lat that handles nil
-(fn lat? [l]
-  (if (empty? l)
+  (list? t))
+;; unsafe empty. will throw on atom
+(fn unsafe-empty? [t]
+  (if (= nil (next t))
       true
-      (if (or (= nil l) (not (atom? (car l))))
-          false
-          (lat? (cdr l)))))
+      false))
+;; safe empty based on null?
+(fn empty? [t]
+  (null? t))
+;; "safe" null
+(fn null? [o]
+  (if (atom? o)
+      (= nil o)
+      (= nil (next o))))
+;; Chapter 1
+;; Primitive
+(fn s-expr? [x]
+  (or (atom? x) (list? x)))
+;; Probably wrong
+(fn eq? [a b]
+  (= a b))
+;; Chapter 2
+;; "safe" because it checks assumes a list
+(fn lat? [l]
+  (if (atom? l) false
+      (if (empty? l)
+          true
+          (if (or
+               (= nil l)
+               (not (atom? (car l))))
+              false
+              (lat? (cdr l))))))

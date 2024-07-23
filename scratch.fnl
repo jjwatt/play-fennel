@@ -29,6 +29,16 @@
   (. lst 1))
 (fn cdr [lst]
   (icollect [i v (ipairs lst)] (if (not= 1 i) v)))
+;; More or less fennely?
+(fn carf [l]
+  (match l
+    [head & tail] head
+    [] []))
+(fn cdrf [l]
+  (match l
+    [head & tail] tail
+    [head] head
+    [] []))
 ;; (fn cons [a lst]
 ;;   (let [newtab {}]
 ;;     (do (table.insert newtab a)
