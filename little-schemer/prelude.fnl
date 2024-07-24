@@ -34,18 +34,19 @@
   (if (= nil (next t))
       true
       false))
-;; safe empty based on null?
-(fn empty? [t]
-  (null? t))
 ;; "safe" null
 (fn null? [o]
   (if (atom? o)
       (= nil o)
       (= nil (next o))))
+;; safe empty based on null?
+(fn empty? [t]
+  (null? t))
 ;; Chapter 1
 ;; Primitive
 (fn s-expr? [x]
-  (or (atom? x) (list? x)))
+  (or (atom? x)
+      (list? x)))
 ;; Probably wrong
 (fn eq? [a b]
   (= a b))
@@ -60,3 +61,13 @@
                (not (atom? (car l))))
               false
               (lat? (cdr l))))))
+(fn lat2? [l]
+  (if (atom? l)
+      false
+      (empty? l)
+      true
+      (= nil l)
+      false
+      (not (atom? (car l)))
+      false
+      (lat2? (cdr l))))
