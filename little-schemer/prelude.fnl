@@ -61,6 +61,7 @@
                (not (atom? (car l))))
               false
               (lat? (cdr l))))))
+;; This is kinda clearer, definitional.
 (fn lat2? [l]
   (if (atom? l)
       false
@@ -71,3 +72,10 @@
       (not (atom? (car l)))
       false
       (lat2? (cdr l))))
+
+(fn member? [a lat]
+  (if
+   (null? lat)
+   false
+   (or (eq? (car lat) a)
+       (member? a (cdr lat)))))

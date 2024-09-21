@@ -29,7 +29,12 @@
   (. lst 1))
 (fn cdr [lst]
   (icollect [i v (ipairs lst)] (if (not= 1 i) v)))
+
+
 ;; More or less fennely?
+
+
+
 (fn carf [l]
   (match l
     [head & tail] head
@@ -39,6 +44,8 @@
     [head & tail] tail
     [head] head
     [] []))
+
+
 ;; (fn cons [a lst]
 ;;   (let [newtab {}]
 ;;     (do (table.insert newtab a)
@@ -112,11 +119,6 @@
       [head & tail] (do (table.insert rt (rev tail))
                         (table.insert rt head) rt)
       [] [])))
-
-
-
-
-
 
 
 ;; (macro when-let1 [bindings & body]
