@@ -1,3 +1,12 @@
 [submodule "racket-schemer"]
 	path = racket-schemer
 	url = git@github.com:bmitc/the-little-schemer.git
+[submodule "fennel-ls"]
+	path = fennel-ls
+	url = https://git.sr.ht/~xerool/fennel-ls
+[submodule "min-love2d-fennel"]
+	path = min-love2d-fennel
+	url = https://gitlab.com/alexjgriffith/min-love2d-fennel.git
+[submodule "absolutely-minimal-love2d-fennel"]
+	path = absolutely-minimal-love2d-fennel
+	url = git@git.sr.ht:~jwatt/absolutely-minimal-love2d-fennel
