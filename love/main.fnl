@@ -3,16 +3,21 @@
                    centery
                    radius
                    ?startradius
-                   ?step]
+                   ?step
+                   ?radiusinc]
   (let [spiral {:radius (or ?startradius (/ radius 10))
-                :lastx 0
-                :lasty 0}]
-    (for [angle 0 (* 360 4) (or ?step 10)]
-      (set spiral.radius (+ spiral.radius 0.25))
+                :radiusinc (or ?radiusinc 0.25)
+                :lastx 0 :lasty 0}]
+    ;; startradius is where the spiral starts and then it
+    ;; grows out. base the startradius on the radius
+    ;; if it's not passed as an argument.
+    (for [angle 0 (* 360 8) (or ?step 8)]
+      (set spiral.radius (+ spiral.radius spiral.radiusinc))
       (let [radians (math.rad angle)
             x (+ centerx (* spiral.radius (math.cos radians)))
             y (+ centery (* spiral.radius (math.sin radians)))]
         (when (> spiral.lastx 0)
+          ;; the first time through we setup lastx and lasty
           (love.graphics.line x y spiral.lastx spiral.lasty))
         (set spiral.lastx x)
         (set spiral.lasty y)))))
@@ -30,14 +35,24 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
   ;;                    (* 0 (/ math.pi 180))
   ;;                    (* 90 (/ math.pi 180))
   ;;                    10)
-  (let [spiral {:x 50
-                :y 50
-                :radius 20
+  (let [spiral {:x 100
+                :y 100
+                :radius 100
                 :startradius 2
-                :step 8}]
-      (my-spiral spiral.x spiral.y spiral.radius spiral.startradius spiral.step)
-      (my-spiral (+ spiral.x (* 4 spiral.radius))
-                 spiral.y spiral.radius 1 20)
+                :radiusinc 0.25
+                :step 10}]
+      (my-spiral spiral.x
+                 spiral.y
+                 spiral.radius
+                 spiral.startradius
+                 spiral.step
+                 spiral.radiusinc)
+      ;; (my-spiral (+ spiral.x (* 4 spiral.radius))
+      ;;            spiral.y
+      ;;            spiral.radius
+      ;;            spiral.startradius
+      ;;            spiral.step
+      ;;            spiral.radiusinc)
       ;; (my-spiral (table.unpack
       ;;             (icollect [_ v (ipairs spiralargs)]
       ;;               (+ v 10))))
