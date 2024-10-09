@@ -5,14 +5,14 @@
                    ?startradius
                    ?step]
   (let [spiral {:radius (or ?startradius (/ radius 10))
-                :lastx (- 1)
-                :lasty (- 1)}]
+                :lastx 0
+                :lasty 0}]
     (for [angle 0 (* 360 4) (or ?step 10)]
       (set spiral.radius (+ spiral.radius 0.25))
       (let [radians (math.rad angle)
             x (+ centerx (* spiral.radius (math.cos radians)))
             y (+ centery (* spiral.radius (math.sin radians)))]
-        (when (> spiral.lastx (- 1))
+        (when (> spiral.lastx 0)
           (love.graphics.line x y spiral.lastx spiral.lasty))
         (set spiral.lastx x)
         (set spiral.lasty y)))))
