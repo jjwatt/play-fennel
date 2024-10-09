@@ -21,11 +21,11 @@
 (fn stay-awake []
   (let [(screen-width screen-height) (get-screen-dimensions)]
     (while true
-      (when (> ((tonumber get-idle-time)) 1000)
+      (when (> (tonumber (get-idle-time)) 200000)
         (local x (math.random 0 (- screen-width 1)))
         (local y (math.random 0 (- screen-height 1)))
         (move-mouse x y))
-      (GLib.usleep (* 30 1000)))))
+      (GLib.usleep (* 30 10000)))))
 
 (local main-loop (GLib.MainLoop nil false))
 

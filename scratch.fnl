@@ -30,9 +30,10 @@
 (fn cdr [lst]
   (icollect [i v (ipairs lst)] (if (not= 1 i) v)))
 
-
-;; More or less fennely?
-
+;; a better cdr for fennel
+;; much faster
+(fn cdr [lst]
+  [(table.unpack lst 2)])
 
 
 (fn carf [l]
@@ -44,7 +45,6 @@
     [head & tail] tail
     [head] head
     [] []))
-
 
 ;; (fn cons [a lst]
 ;;   (let [newtab {}]
@@ -107,10 +107,10 @@
 ;;     [head tail] (revl [tail]) head
 ;;     [n] [n]))
 
-;; can't get these unnested
+;; this one is faster for some reason
 (fn rev2 [l]
   (match l
-    [head & tail] [(rev1 tail) head]
+    [head & tail] [(rev2 tail) head]
     [] []))
 
 (fn rev [l]
@@ -238,6 +238,20 @@
              ,then-form
              ,else-form)))))
 
+
+(fn find [t x ?k]
+  (match (next t ?k)
+    (k x) k
+    (k _) (find t x k)))
+
+;; (let [tab ["a" "b" "c"]] (find tab "b")) ;; => 2
+
+(icollect [i x (ipairs [1 2 3 4 5 6])]
+  (if (= 0 (% x 2)) x)) ; => [2 4 6]
+
+(collect [k v (pairs {:key "value" :other-key "SHINY"})]
+  (values k (.. "prefix:" v)))
+
 ;; {: when-let}
 ;; {: if-let}
 ;; {: let*}
@@ -251,3 +265,20 @@
 ;;   (print (table.remove t)) ; prints "last"
 ;;   (table.remove t 1) ; t is now ["a" 2 3]
 ;;   (print (table.concat t ", "))) 
+
+;; benchmarking
+;; (fn bm [thunk]
+;;   (let [number 1000
+;;         iterations 1000
+;;         start-time (os.clock)]
+;;     (for [i 1 iterations] (thunk))
+;;     (- (os.clock) start-time)))
+
+(fn benchmark [thunk ?iterations]
+  (let [iterations (or ?iterations 1000)
+        start-time (os.clock)]
+    (for [i 1 iterations] (thunk))
+    (- (os.clock) start-time)))
+
+
+;; (fn flatten)
