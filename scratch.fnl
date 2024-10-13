@@ -280,5 +280,16 @@
     (for [i 1 iterations] (thunk))
     (- (os.clock) start-time)))
 
+(fn norm [value low high]
+  "Normalize value to between 0.0 and 1.0"
+  (/ (- value low) (- high low)))
+(fn lerp [low high amt]
+  "Linear interpolation of amt (normalized) to low-high"
+  (+ low (* amt (- high low))))
+(fn mapvalue [value low1 high1 low2 high2]
+  "Map from one set of values to the other"
+  (let [n (norm value low1 high1)
+        c (lerp low2 high2 n)]
+    c))
 
 ;; (fn flatten)

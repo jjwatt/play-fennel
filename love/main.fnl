@@ -1,4 +1,16 @@
 
+(fn norm [value low high]
+  "Normalize value to between 0.0 and 1.0"
+  (/ (- value low) (- high low)))
+(fn lerp [low high amt]
+  "Linear interpolation of amt (normalized) to low-high"
+  (+ low (* amt (- high low))))
+(fn mapvalue [value low1 high1 low2 high2]
+  "Map from one set of values to the other"
+  (let [n (norm value low1 high1)
+        c (lerp low2 high2 n)]
+    c))
+
 (lambda my-spiral [centerx
                    centery
                    radius
@@ -65,6 +77,20 @@
         (set lastx x)
         (set lasty y)))))
 
+(fn my-eight-eleven [width height ?pow]
+  (for [x 5 width 5]
+    (let [n (mapvalue x 5 width -1 1)
+          p (^ n (or ?pow 4))
+          ypos (lerp 20 height p)]
+      (love.graphics.line x 0 x ypos))))
+
+(fn my-curve []
+  (for [x 0 200 1]
+    (let [n (norm x 0.0 200.0)]
+      (var y (^ n 4))
+      (set y (* 200 y))
+      (love.graphics.points x y))))
+
 (fn love.load []
   ;; start a thread listening on stdin
   (: (love.thread.newThread "require('love.event')
@@ -74,37 +100,47 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start))
   (let [(ok val) (pcall fennel.eval line)]
     (print (if ok (fennel.view val) val))))
 (fn love.draw []
+  (var (WIDTH HEIGHT) (love.graphics.getDimensions))
+  (love.graphics.setColor 0 1 0)
+  (my-eight-eleven WIDTH HEIGHT 4)
   ;; (love.graphics.arc :line :open 16 16 16
   ;;                    (* 0 (/ math.pi 180))
   ;;                    (* 90 (/ math.pi 180))
   ;;                    10)
-  (love.graphics.setColor 1 1 0)
-  (let [spiral {:x 100
-                :y 100
-                :radius 100
-                :startradius 2
-                :radiusinc 0.25
-                :step 10}]
-    (my-spiral2 spiral.x
-                spiral.y
-                spiral.radius
-                spiral.startradius
-                spiral.step
-                spiral.radiusinc))
-  (love.graphics.setColor 1 0 0)
-  (let [spiral {:x 200
-                :y 200
-                :radius 100
-                :startradius 2
-                :radiusinc 0.50
-                :step 10}]
-    (my-spiral2 spiral.x
-                spiral.y
-                spiral.radius
-                spiral.startradius
-                spiral.step
-                spiral.radiusinc))
-  (my-sin-wave)
+  ;; (love.graphics.setColor 1 1 0)
+  ;; (let [spiral {:x 100
+  ;;               :y 100
+  ;;               :radius 100
+  ;;               :startradius 2
+  ;;               :radiusinc 0.25
+  ;;               :step 10}]
+  ;;   (my-spiral2 spiral.x
+  ;;               spiral.y
+  ;;               spiral.radius
+  ;;               spiral.startradius
+  ;;               spiral.step
+  ;;               spiral.radiusinc))
+  ;; (love.graphics.setColor 1 0 0)
+  ;; (let [spiral {:x 200
+  ;;               :y 200
+  ;;               :radius 100
+  ;;               :startradius 2
+  ;;               :radiusinc 0.50
+  ;;               :step 10}]
+  ;;   (my-spiral2 spiral.x
+  ;;               spiral.y
+  ;;               spiral.radius
+  ;;               spiral.startradius
+  ;;               spiral.step
+  ;;               spiral.radiusinc))
+  ;; (let [wave {:offset 50
+  ;;             :scale 50
+  ;;             :inc (/ math.pi 18)
+  ;;             :angle 0}]
+  ;;   (my-sin-wave wave.offset
+  ;;                wave.scale
+  ;;                wave.inc
+  ;;                wave.angle))
     ;; (let [spiral {:x 400
     ;;               :y 400
     ;;               :radius 100
