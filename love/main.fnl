@@ -187,7 +187,6 @@ while 1 do love.event.push('stdin', io.read('*line')) end") :start)
 
 (fn love.draw []
   (var (WIDTH HEIGHT) (love.graphics.getDimensions))
-  (love.graphics.setColor 0 1 0)
   (love.graphics.setBlendMode "alpha" "premultiplied")
   (love.graphics.setColor 1 1 1 1)
   ;; draw the off-screen canvas on the screen

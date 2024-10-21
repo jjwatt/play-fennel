@@ -181,7 +181,7 @@ local function draw_sine_wave_noise0(...)
       else
       end
       if (x0 <= width) then
-        return recur((x0 + xstep), x0, y, (angle_inc + angle0))
+        return recur((x0 + xstep), x0, y, (angle0 + angle_inc))
       else
         return nil
       end
@@ -221,7 +221,6 @@ love.load = function()
 end
 love.draw = function()
   local WIDTH, HEIGHT = love.graphics.getDimensions()
-  love.graphics.setColor(0, 1, 0)
   love.graphics.setBlendMode("alpha", "premultiplied")
   love.graphics.setColor(1, 1, 1, 1)
   return love.graphics.draw(canvas, 0, 0)
