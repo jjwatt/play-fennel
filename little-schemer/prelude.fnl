@@ -53,7 +53,6 @@
 ;; Chapter 2
 ;; lat? list of atoms?
 ;; "safe" because it checks assumes a list
-;; TODO: rewrite in fennel style (use match or case etc)
 (fn lat? [l]
   (if (atom? l) false
       (if (empty? l)
