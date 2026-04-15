@@ -162,20 +162,20 @@
                         y
                         (+ angle angle-inc))))))))
 
-(fn love.handlers.stdin [line]
-  ;; evaluate lines read from stdin as fennel code
-  (let [(ok val) (pcall fennel.eval line)]
-    (print (if ok (fennel.view val) val))))
-  (fn love.keypressed [key]
-    (love.event.quit)
-    (love.event.quit))
+;; (fn love.handlers.stdin [line]
+;;   ;; evaluate lines read from stdin as fennel code
+;;   (let [(ok val) (pcall fennel.eval line)]
+;;     (print (if ok (fennel.view val) val))))
+
+(fn love.keypressed [key]
+  (love.event.quit))
 
 (global canvas nil)
 ;; NOTE: drawing stuff directly to the screen in love.load doesn't work
 (fn love.load []
   ;; start a thread listening on stdin
-  (: (love.thread.newThread "require('love.event')
-while 1 do love.event.push('stdin', io.read('*line')) end") :start)
+;;   (: (love.thread.newThread "require('love.event')
+;; while 1 do love.event.push('stdin', io.read('*line')) end") :start)
   ;; setup and draw to off-screen canvas
   (set canvas (love.graphics.newCanvas 800 600))
   (love.graphics.setCanvas canvas)

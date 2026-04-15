@@ -13,9 +13,9 @@ end
 local custom_random
 local function custom_random0(...)
   do
-    local cnt_61_auto = select("#", ...)
-    if (0 ~= cnt_61_auto) then
-      error(("Wrong number of args (%s) passed to %s"):format(cnt_61_auto, "custom-random"))
+    local cnt_54_auto = select("#", ...)
+    if (0 ~= cnt_54_auto) then
+      error(("Wrong number of args (%s) passed to %s"):format(cnt_54_auto, "custom-random"))
     else
     end
   end
@@ -23,9 +23,18 @@ local function custom_random0(...)
 end
 custom_random = custom_random0
 local function my_spiral(centerx, centery, radius, _3fstartradius, _3fstep, _3fradiusinc)
-  _G.assert((nil ~= radius), "Missing argument radius on main.fnl:22")
-  _G.assert((nil ~= centery), "Missing argument centery on main.fnl:21")
-  _G.assert((nil ~= centerx), "Missing argument centerx on main.fnl:20")
+  if (nil == radius) then
+    _G.error("Missing argument radius on main.fnl:22", 2)
+  else
+  end
+  if (nil == centery) then
+    _G.error("Missing argument centery on main.fnl:21", 2)
+  else
+  end
+  if (nil == centerx) then
+    _G.error("Missing argument centerx on main.fnl:20", 2)
+  else
+  end
   local spiral = {radius = (_3fstartradius or (radius / 10)), radiusinc = (_3fradiusinc or 0.25), lastx = 0, lasty = 0}
   for angle = 0, (360 * 4), (_3fstep or 8) do
     spiral.radius = (spiral.radius + spiral.radiusinc)
@@ -42,9 +51,18 @@ local function my_spiral(centerx, centery, radius, _3fstartradius, _3fstep, _3fr
   return nil
 end
 local function my_spiral2(centerx, centery, radius, _3fstartradius, _3fstep, _3fradiusinc)
-  _G.assert((nil ~= radius), "Missing argument radius on main.fnl:46")
-  _G.assert((nil ~= centery), "Missing argument centery on main.fnl:45")
-  _G.assert((nil ~= centerx), "Missing argument centerx on main.fnl:44")
+  if (nil == radius) then
+    _G.error("Missing argument radius on main.fnl:46", 2)
+  else
+  end
+  if (nil == centery) then
+    _G.error("Missing argument centery on main.fnl:45", 2)
+  else
+  end
+  if (nil == centerx) then
+    _G.error("Missing argument centerx on main.fnl:44", 2)
+  else
+  end
   local spiral = {radius = (_3fstartradius or (radius / 10)), radiusinc = (_3fradiusinc or 0.25), lastx = centerx, lasty = centery}
   for angle = 0, (360 * 4), (_3fstep or 8) do
     spiral.radius = (spiral.radius + spiral.radiusinc)
@@ -97,33 +115,33 @@ local function my_curve()
 end
 local draw_sine_wave
 local function draw_sine_wave0(...)
-  local _9_ = select("#", ...)
-  if (_9_ == 0) then
+  local case_15_ = select("#", ...)
+  if (case_15_ == 0) then
     local width, height = love.graphics.getDimensions()
     local scale_val = 40
     local angle_inc = 1
     local startangle = 0
     return draw_sine_wave0((height / 2), scale_val, angle_inc, startangle)
-  elseif (_9_ == 1) then
+  elseif (case_15_ == 1) then
     local offset = ...
     return draw_sine_wave0(offset, 40, 1, 0)
-  elseif (_9_ == 2) then
+  elseif (case_15_ == 2) then
     return error(("Wrong number of args (%s) passed to %s"):format(2, "draw-sine-wave"))
-  elseif (_9_ == 3) then
+  elseif (case_15_ == 3) then
     return error(("Wrong number of args (%s) passed to %s"):format(3, "draw-sine-wave"))
-  elseif (_9_ == 4) then
+  elseif (case_15_ == 4) then
     local offset, scale_val, angle_inc, startangle = ...
     local width, height = love.graphics.getDimensions()
     local xstep = 5
     local borderx = 20
-    local _2_10_ = borderx
-    local x = _2_10_
-    local _4_11_ = 0
-    local lastx = _4_11_
-    local _6_12_ = 0
-    local lasty = _6_12_
-    local _8_13_ = startangle
-    local angle = _8_13_
+    local _2_16_ = borderx
+    local x = _2_16_
+    local _4_17_ = 0
+    local lastx = _4_17_
+    local _6_18_ = 0
+    local lasty = _6_18_
+    local _8_19_ = startangle
+    local angle = _8_19_
     local function recur(x0, lastx0, lasty0, angle0)
       local rad = math.rad(angle0)
       local y = (offset + (math.sin(rad) * scale_val))
@@ -137,42 +155,42 @@ local function draw_sine_wave0(...)
         return nil
       end
     end
-    return recur(_2_10_, _4_11_, _6_12_, _8_13_)
+    return recur(_2_16_, _4_17_, _6_18_, _8_19_)
   else
-    local _ = _9_
+    local _ = case_15_
     return error(("Wrong number of args (%s) passed to %s"):format(_, "draw-sine-wave"))
   end
 end
 draw_sine_wave = draw_sine_wave0
 local draw_sine_wave_noise
 local function draw_sine_wave_noise0(...)
-  local _22_ = select("#", ...)
-  if (_22_ == 0) then
+  local case_28_ = select("#", ...)
+  if (case_28_ == 0) then
     local width, height = love.graphics.getDimensions()
     local scale_val = 60
     local angle_inc = 1
     local startangle = 0
     return draw_sine_wave_noise0((height / 2), scale_val, angle_inc, startangle)
-  elseif (_22_ == 1) then
+  elseif (case_28_ == 1) then
     local offset = ...
     return draw_sine_wave_noise0(offset, 40, 1, 0)
-  elseif (_22_ == 2) then
+  elseif (case_28_ == 2) then
     return error(("Wrong number of args (%s) passed to %s"):format(2, "draw-sine-wave-noise"))
-  elseif (_22_ == 3) then
+  elseif (case_28_ == 3) then
     return error(("Wrong number of args (%s) passed to %s"):format(3, "draw-sine-wave-noise"))
-  elseif (_22_ == 4) then
+  elseif (case_28_ == 4) then
     local offset, scale_val, angle_inc, startangle = ...
     local width, height = love.graphics.getDimensions()
     local xstep = 5
     local borderx = 20
-    local _2_23_ = borderx
-    local x = _2_23_
-    local _4_24_ = 0
-    local lastx = _4_24_
-    local _6_25_ = 0
-    local lasty = _6_25_
-    local _8_26_ = startangle
-    local angle = _8_26_
+    local _2_29_ = borderx
+    local x = _2_29_
+    local _4_30_ = 0
+    local lastx = _4_30_
+    local _6_31_ = 0
+    local lasty = _6_31_
+    local _8_32_ = startangle
+    local angle = _8_32_
     local function recur(x0, lastx0, lasty0, angle0)
       local rad = math.rad(angle0)
       local y = (offset + (custom_random() * scale_val))
@@ -186,31 +204,19 @@ local function draw_sine_wave_noise0(...)
         return nil
       end
     end
-    return recur(_2_23_, _4_24_, _6_25_, _8_26_)
+    return recur(_2_29_, _4_30_, _6_31_, _8_32_)
   else
-    local _ = _22_
+    local _ = case_28_
     return error(("Wrong number of args (%s) passed to %s"):format(_, "draw-sine-wave-noise"))
   end
 end
 draw_sine_wave_noise = draw_sine_wave_noise0
-love.handlers.stdin = function(line)
-  local ok, val = pcall(fennel.eval, line)
-  local function _30_()
-    if ok then
-      return fennel.view(val)
-    else
-      return val
-    end
-  end
-  return print(_30_())
-end
 love.keypressed = function(key)
   love.event.quit()
   return love.event.quit()
 end
 canvas = nil
 love.load = function()
-  love.thread.newThread("require('love.event')\nwhile 1 do love.event.push('stdin', io.read('*line')) end"):start()
   canvas = love.graphics.newCanvas(800, 600)
   love.graphics.setCanvas(canvas)
   love.graphics.clear(0, 0, 0, 0)
