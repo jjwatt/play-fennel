@@ -130,7 +130,7 @@
                         y
                         (+ angle-inc angle))))))))
 (defn draw-sine-wave-noise
-  "Draw a sine wave."
+  "Draw a noisy sine wave."
   ([]
    (let [(width height) (love.graphics.getDimensions)
          scale-val 60
@@ -149,9 +149,7 @@
             angle startangle]
            (let [rad (math.rad angle)
                  ;; sin returns between -1 and 1 so scale the value
-                 ;; using scale-val
-                 y (+ offset (* (custom-random) scale-val))
-                 ]
+                 y (+ offset (* (custom-random) scale-val))]
              (when (and
                     (> lastx 0)
                     (<= lastx (- width borderx)))

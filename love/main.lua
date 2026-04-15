@@ -212,7 +212,6 @@ local function draw_sine_wave_noise0(...)
 end
 draw_sine_wave_noise = draw_sine_wave_noise0
 love.keypressed = function(key)
-  love.event.quit()
   return love.event.quit()
 end
 canvas = nil
