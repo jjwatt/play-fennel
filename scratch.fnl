@@ -155,7 +155,7 @@
    1        2
    >>
   > (when-let [[a nil]
-               [b 2])
+               [b 2]]
       (print a b))
     nil
     >>
@@ -171,6 +171,13 @@
       `(let ,bindtable
          (when (and ,(table.unpack symbols))
            ,(table.unpack body))))))
+
+(macro when-let [bindings & body]
+  (let [symbols (icollect [i v (ipairs bindings)]
+                  (when (= 1 (% i 2)) v))]
+    `(let ,bindings
+       (when (and ,(table.unpack symbols))
+         ,(table.unpack body)))))
 
 (macro when1 [condition body ...]
   "Evaluate body for side-effects only when condition is truthy."
