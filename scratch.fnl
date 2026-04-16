@@ -140,7 +140,7 @@
 ;;        (when (and ,symbols)
 ;;          ,(table.unpack body)))))
 
-(macro when-let [bindings & body]
+(macro when-letv1 [bindings & body]
   "Bind `bindings` and execute `body`, short-circuiting on `nil`.
 
   This macro combines `when` and `let`.  It takes a list of bindings
@@ -172,7 +172,7 @@
          (when (and ,(table.unpack symbols))
            ,(table.unpack body))))))
 
-(macro when-let [bindings & body]
+(macro when-letv2 [bindings & body]
   (let [symbols (icollect [i v (ipairs bindings)]
                   (when (= 1 (% i 2)) v))]
     `(let ,bindings
@@ -180,9 +180,26 @@
          ,(table.unpack body)))))
 
 (macro when-let [bindings & body]
+  "Bind `bindings` and execute `body`, short-circuiting on `nil`.
+
+  This macro combines `when` and `let`.  It takes a list of bindings
+  and binds them like `let` before executing `body`, but if any
+  binding's value evaluates to `nil`, then `nil` is returned.
+
+  Examples:
+
+  > (when-let [a 1 b 2]
+      (print a b))
+   1        2
+   >>
+  > (when-let [a nil b 2]
+      (print a b))
+    nil
+    >>
+  "
   (fn build-step [idx]
     (if (> idx (length bindings))
-    `(do (,table.unpack body))
+    `(do ,(table.unpack body))
     (let [name (. bindings idx)
           val (. bindings (+ idx 1))]
       `(let [,name ,val]
