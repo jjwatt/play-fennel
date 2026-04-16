@@ -179,6 +179,17 @@
        (when (and ,(table.unpack symbols))
          ,(table.unpack body)))))
 
+(macro when-let [bindings & body]
+  (fn build-step [idx]
+    (if (> idx (length bindings))
+    `(do (,table.unpack body))
+    (let [name (. bindings idx)
+          val (. bindings (+ idx 1))]
+      `(let [,name ,val]
+         (if (not= nil ,name)
+             ,(build-step (+ idx 2)))))))
+  (build-step 1))
+
 (macro when1 [condition body ...]
   "Evaluate body for side-effects only when condition is truthy."
   (assert body "expected body")
