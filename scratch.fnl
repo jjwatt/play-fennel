@@ -207,6 +207,17 @@
              ,(build-step (+ idx 2)))))))
   (build-step 1))
 
+(macro nlet [name bindings & body]
+  "Named let."
+  (let [arg-names []
+        initial-vals []]
+    (for [i 1 (length bindings) 2]
+      (table.insert arg-names (. bindings i))
+      (table.insert initial-vals (. bindings (+ i 1))))
+    `(let [,name (fn ,name [,(table.unpack arg-names)]
+                   ,(table.unpack body))]
+       (,name ,(table.unpack initial-vals)))))
+
 (macro when1 [condition body ...]
   "Evaluate body for side-effects only when condition is truthy."
   (assert body "expected body")
