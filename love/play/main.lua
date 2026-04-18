@@ -221,7 +221,7 @@ love.load = function()
   love.graphics.clear(0, 0, 0, 0)
   love.graphics.setBlendMode("alpha")
   love.graphics.setColor(0, 1, 0)
-  draw_sine_wave_noise()
+  my_sin_wave()
   return love.graphics.setCanvas()
 end
 love.draw = function()

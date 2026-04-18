@@ -14,8 +14,9 @@
   (let [n (norm value low1 high1)
         c (lerp low2 high2 n)]
     c))
-(defn custom-random []
-  (- 1 (^ (math.random 0 1) 5)))
+
+(fn cutom-random []
+  (-1 (^ (math.random 0 1) 5)))
 
 (lambda my-spiral [centerx
                    centery
@@ -129,6 +130,7 @@
                         x
                         y
                         (+ angle-inc angle))))))))
+
 (defn draw-sine-wave-noise
   "Draw a noisy sine wave."
   ([]
@@ -181,6 +183,7 @@
   (love.graphics.setBlendMode "alpha")
   (love.graphics.setColor 0 1 0)
   (draw-sine-wave-noise)
+  ;; (my-sin-wave)
   (love.graphics.setCanvas))
 
 (fn love.draw []

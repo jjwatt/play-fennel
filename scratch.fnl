@@ -218,6 +218,10 @@
                    ,(table.unpack body))]
        (,name ,(table.unpack initial-vals)))))
 
+(nlet factorial [n 5 acc 1]
+      (if (= n 0) acc
+          (factorial (- n 1) (* n acc))))
+
 (macro when1 [condition body ...]
   "Evaluate body for side-effects only when condition is truthy."
   (assert body "expected body")

@@ -11,6 +11,9 @@
         c (lerp low2 high2 n)]
     c))
 
+(fn cutom-random []
+  (-1 (^ (math.random 0 1) 5)))
+
 (lambda my-spiral [centerx
                    centery
                    radius
