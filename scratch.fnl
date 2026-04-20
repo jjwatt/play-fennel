@@ -222,6 +222,30 @@
       (if (= n 0) acc
           (factorial (- n 1) (* n acc))))
 
+(macro nif [expr neg zero pos]
+  "Evaluate expr and branch based on value."
+  `(let [val# ,expr]
+     (if (< val# 0)
+         ,neg
+         (= val# 0)
+         ,zero
+         ,pos)))
+
+(macro leg-day [...]
+  (let [exercises [...]
+        reps (icollect [_ ex (ipairs exercises)]
+               `(print (.. "🦵 Doing: " ,ex)))]
+    `(if (and (: self :is-walking) (not (: self :shaking?)))
+         (do
+           (unpack ,reps)
+           (tset self :mobility :compromised))
+         (print "Failure: Leg day skipped 😭."))))
+
+(let [self {:mobility :fine
+            :is-walking (fn [] true)
+            :shaking? (fn [] false)}]
+  (leg-day :leg-curl :calf-extension :seated-leg-curl :squats))
+
 (macro when1 [condition body ...]
   "Evaluate body for side-effects only when condition is truthy."
   (assert body "expected body")
@@ -311,10 +335,10 @@
 ;;   (table.insert t 2 "a") ; t is now [1 "a" 2 3]
 ;;   (print (table.concat t ", "))
 ;;   (table.insert t "last") ; now [1 "a" 2 3 "last"]
-;;   (print (table.concat t ", "))  
+;;   (print (table.concat t ", "))
 ;;   (print (table.remove t)) ; prints "last"
 ;;   (table.remove t 1) ; t is now ["a" 2 3]
-;;   (print (table.concat t ", "))) 
+;;   (print (table.concat t ", ")))
 
 ;; benchmarking
 ;; (fn bm [thunk]
