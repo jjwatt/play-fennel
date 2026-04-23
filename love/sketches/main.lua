@@ -1,4 +1,4 @@
-fennel = require("fennel")
+fennel = require("fennel").install()
 debug.traceback = fennel.traceback
 table.insert(package.loaders, function(filename)
    if love.filesystem.getInfo(filename) then

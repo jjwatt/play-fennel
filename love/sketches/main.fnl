@@ -1,4 +1,4 @@
-(local sketches (require "sketches.fnl"))
+(local sketches (require :sketches))
 
 (global canvas nil)
 ;; NOTE: drawing stuff directly to the screen in love.load doesn't work
@@ -9,7 +9,7 @@
   (love.graphics.clear 0 0 0 0)
   (love.graphics.setBlendMode "alpha")
   (love.graphics.setColor 0 1 0)
-  ;; (my-sin-wave)
+  (sketches.my-sin-wave)
   (love.graphics.setCanvas))
 
 (fn love.draw []
