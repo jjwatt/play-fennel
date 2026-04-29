@@ -9,7 +9,9 @@
   (love.graphics.clear 0 0 0 0)
   (love.graphics.setBlendMode "alpha")
   (love.graphics.setColor 0 1 0)
-  (sketches.my-sin-wave)
+  ;;  (sketches.my-spiral 100 100 100)
+  ;; (sketches.my-eight-eleven (love.graphics.getDimensions))
+  (sketches.my-curve)
   (love.graphics.setCanvas))
 
 (fn love.draw []
@@ -17,8 +19,7 @@
   (love.graphics.setBlendMode "alpha" "premultiplied")
   (love.graphics.setColor 1 1 1 1)
   ;; draw the off-screen canvas on the screen
-  (love.graphics.draw canvas 0 0)
-  )
+  (love.graphics.draw canvas 0 0))
 
 (fn love.keypressed [key]
   (love.event.quit))

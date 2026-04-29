@@ -94,4 +94,8 @@
       (set y (* 200 y))
       (love.graphics.points x y))))
 
-{ : my-sin-wave }
+{ : my-sin-wave
+  : my-spiral
+  : my-spiral2
+  : my-eight-eleven
+  : my-curve}
