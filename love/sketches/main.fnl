@@ -11,7 +11,7 @@
   (love.graphics.setColor 0 1 0)
   ;;  (sketches.my-spiral 100 100 100)
   ;; (sketches.my-eight-eleven (love.graphics.getDimensions))
-  (sketches.my-curve)
+  (sketches.my-spiral 100 100 100)
   (love.graphics.setCanvas))
 
 (fn love.draw []
@@ -22,4 +22,5 @@
   (love.graphics.draw canvas 0 0))
 
 (fn love.keypressed [key]
-  (love.event.quit))
+  (when (= key "q")
+    (love.event.quit)))
