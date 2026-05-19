@@ -20,7 +20,7 @@
             ];
 
             shellHook = ''
-            FENNEL_SHARE="${pkgs.fennel}/share/lua/${pkgs.lua.luaversion}"
+            FENNEL_SHARE="${pkgs.luaPackages.fennel}/share/lua/${pkgs.lua.luaversion}"
             export LUA_PATH="$FENNEL_SHARE/?.lua;$FENNEL_SHARE/?/init.lua;./?.lua;;"
 
             echo "Global 'fennel' module is now available to Lua and LOVE2D."
