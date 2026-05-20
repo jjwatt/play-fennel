@@ -11,8 +11,8 @@
         c (lerp low2 high2 n)]
     c))
 
-(fn cutom-random []
-  (- 1 (^ (math.random 0 1) 5)))
+(fn custom-random []
+  (- 1 (^ (math.random) 5)))
 
 (lambda my-spiral [centerx
                    centery
@@ -60,6 +60,27 @@
         (set spiral.lastx x)
         (set spiral.lasty y)))))
 
+(lambda my-noise-spiral [draw-line centerx centery radius]
+  (var startradius (/ radius 10))
+  (var lastx (- 999))
+  (var lasty (- 999))
+  (var radius-noise (math.random startradius))
+  (for [angle 0 (* 360 4) 10]
+    (set radius-noise (+ radius-noise 0.08))
+    (let [thisradius (+ startradius
+                        (* radius-noise
+                           (- 1 (custom-random))))]
+      (set startradius (+ startradius 0.2
+                          (- 1 (custom-random))))
+      (let [radians (math.rad angle)
+            x (+ centerx (* thisradius (math.cos radians)))
+            y (+ centery (* thisradius (math.sin radians)))]
+        (when (> lastx (- 999))
+          (draw-line x y lastx lasty))
+        (set (lastx lasty)
+             (values x y))))))
+
+
 (lambda my-sin-wave [?offset
                      ?scale-val
                      ?angle-inc
@@ -97,5 +118,6 @@
 { : my-sin-wave
   : my-spiral
   : my-spiral2
+  : my-noise-spiral
   : my-eight-eleven
   : my-curve}

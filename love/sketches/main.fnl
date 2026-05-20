@@ -11,7 +11,10 @@
   (love.graphics.setColor 0 1 0)
   ;;  (sketches.my-spiral 100 100 100)
   ;; (sketches.my-eight-eleven (love.graphics.getDimensions))
-  (sketches.my-spiral 100 100 100)
+  (let [(width height) (love.graphics.getDimensions)
+        center-x (/ width 2)
+        center-y (/ height 2)]
+    (sketches.my-noise-spiral love.graphics.line center-x center-y (/ width 2)))
   (love.graphics.setCanvas))
 
 (fn love.draw []
