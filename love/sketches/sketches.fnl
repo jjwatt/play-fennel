@@ -61,12 +61,12 @@
         (set spiral.lasty y)))))
 
 (lambda my-noise-spiral [draw-line centerx centery radius]
-  (var startradius (/ radius 10))
+  (var startradius 0)
   (var lastx (- 999))
   (var lasty (- 999))
   (var radius-noise (math.random startradius))
-  (for [angle 0 (* 360 4) 10]
-    (set radius-noise (+ radius-noise 0.08))
+  (for [angle 0 (* 360 4) 5]
+    (set radius-noise (+ radius-noise 0.09))
     (let [thisradius (+ startradius
                         (* radius-noise
                            (- 1 (custom-random))))]

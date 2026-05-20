@@ -1,28 +1,19 @@
 (local sketches (require :sketches))
 
-(global canvas nil)
-;; NOTE: drawing stuff directly to the screen in love.load doesn't work
+(var time 0)
+
 (fn love.load []
-  ;; setup and draw to off-screen canvas
-  (set canvas (love.graphics.newCanvas 800 600))
-  (love.graphics.setCanvas canvas)
-  (love.graphics.clear 0 0 0 0)
-  (love.graphics.setBlendMode "alpha")
-  (love.graphics.setColor 0 1 0)
-  ;;  (sketches.my-spiral 100 100 100)
-  ;; (sketches.my-eight-eleven (love.graphics.getDimensions))
+  (love.graphics.setBackgroundColor 0 0 0))
+
+(fn love.update [dt]
+  (set time (+ time dt)))
+
+(fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
         center-y (/ height 2)]
-    (sketches.my-noise-spiral love.graphics.line center-x center-y (/ width 2)))
-  (love.graphics.setCanvas))
-
-(fn love.draw []
-  (var (WIDTH HEIGHT) (love.graphics.getDimensions))
-  (love.graphics.setBlendMode "alpha" "premultiplied")
-  (love.graphics.setColor 1 1 1 1)
-  ;; draw the off-screen canvas on the screen
-  (love.graphics.draw canvas 0 0))
+    (love.graphics.setColor 0 1 0 1)
+    (sketches.my-noise-spiral love.graphics.line center-x center-y width time)))
 
 (fn love.keypressed [key]
   (when (= key "q")
