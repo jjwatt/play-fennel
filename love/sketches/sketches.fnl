@@ -104,6 +104,7 @@
             (set (lastx lasty)
                  (values x y))))))))
 
+(var smooth-noise-state 0)
 (lambda my-noise-spiral12 [draw-line center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))
@@ -117,10 +118,12 @@
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
 
-      (let [wave1 (math.sin (+ (* angle 13) (* t 7)))
-            wave2 (math.cos (+ (* angle 29) (* t 3)))
-            sharp-spikes (^ (math.abs (* wave1 wave2)) 4)
-            noise-factor (+ 0.3 (* 0.9 sharp-spikes))]
+      (let [moving-wave (math.sin (+ (* angle 3) (* t 6)))
+            raw-noise (math.random)
+            _ (set smooth-noise-state (+ smooth-noise-state (* (- raw-noise smooth-noise-state) 0.05)))
+            combined-noise (+ (* 0.4 moving-wave) (* 0.6 smooth-noise-state))
+            sharp-spikes (^ (math.abs combined-noise) 4)
+            noise-factor (+ 0.1 (* 0.9 sharp-spikes))]
         (let [thisradius (+ startradius (* radius-noise noise-factor))]
             (set startradius (+ startradius (* growth-rate step-size)))
             (let [radians (math.rad angle)
