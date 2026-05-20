@@ -104,6 +104,34 @@
             (set (lastx lasty)
                  (values x y))))))))
 
+(lambda my-noise-spiral12 [draw-line center-x center-y max-radius t]
+  (var startradius 0)
+  (var lastx (- 999))
+  (var lasty (- 999))
+
+  (let [total-loops 10
+        max-angle (* 360 total-loops)
+        step-size 5
+        growth-rate (/ max-radius max-angle)]
+    (var radius-noise (+ 10 (* 15 (math.sin (* t 2)))))
+    (for [angle 0 max-angle step-size]
+      (set radius-noise (+ radius-noise 0.09))
+
+      (let [wave1 (math.sin (+ (* angle 13) (* t 7)))
+            wave2 (math.cos (+ (* angle 29) (* t 3)))
+            sharp-spikes (^ (math.abs (* wave1 wave2)) 4)
+            noise-factor (+ 0.3 (* 0.9 sharp-spikes))]
+        (let [thisradius (+ startradius (* radius-noise noise-factor))]
+            (set startradius (+ startradius (* growth-rate step-size)))
+            (let [radians (math.rad angle)
+                  x (+ center-x (* thisradius (math.cos radians)))
+                  y (+ center-y (* thisradius (math.sin radians)))]
+              (when (> lastx (- 999))
+                (draw-line x y lastx lasty))
+              (set (lastx lasty)
+                   (values x y))))))))
+
+
 (lambda my-sin-wave [?offset
                      ?scale-val
                      ?angle-inc
@@ -143,5 +171,6 @@
   : my-spiral2
   : my-noise-spiral
   : my-noise-spiral2
+  : my-noise-spiral12
   : my-eight-eleven
   : my-curve}
