@@ -10,19 +10,36 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
+
+        deps-fnl-custom = pkgs.deps-fnl.overrideAttrs (oldAttrs: rec {
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+          installPhase = ''
+            runHook preInstall
+            mkdir -p $out/bin $out/libexec
+            cp deps $out/libexec/deps
+
+            makeWrapper "${pkgs.luaPackages.fennel}/bin/fennel" $out/bin/deps \
+              --add-flags "$out/libexec/deps"
+
+            runHook postInstall
+          '';
+        });
       in
         {
           devShells.default = pkgs.mkShell {
             buildInputs = with pkgs; [
               luaPackages.fennel
               fennel-ls
+              deps-fnl-custom
               lua
               love
             ];
 
             shellHook = ''
             FENNEL_SHARE="${pkgs.luaPackages.fennel}/share/lua/${pkgs.lua.luaversion}"
-            export LUA_PATH="$FENNEL_SHARE/?.lua;$FENNEL_SHARE/?/init.lua;./?.lua;;"
+            DEPS_SHARE="${deps-fnl-custom}/share/lua/${pkgs.lua.luaversion}"
+            export LUA_PATH="$FENNEL_SHARE/?.lua;$FENNEL_SHARE/?/init.lua;$DEPS_SHARE/?.lua;./?.lua;;"
+            export PATH="${deps-fnl-custom}/bin:$PATH"
 
             echo "Global 'fennel' module is now available to Lua and LOVE2D."
             '';
