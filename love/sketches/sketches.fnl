@@ -118,7 +118,7 @@
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
 
-      (let [moving-wave (math.sin (+ (* angle 3) (* t 6)))
+      (let [moving-wave (math.sin (+ (* angle (+ 3 (* 4 (math.sin t)))) (* t 6)))
             raw-noise (math.random)
             _ (set smooth-noise-state (+ smooth-noise-state (* (- raw-noise smooth-noise-state) 0.05)))
             combined-noise (+ (* 0.4 moving-wave) (* 0.6 smooth-noise-state))
