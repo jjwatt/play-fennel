@@ -26,13 +26,13 @@
             fennelCli=$(find "${pkgs.luaPackages.fennel}" -type f -path "*/bin/fennel" | head -n 1)
 
             cat << EOF > $out/bin/deps
-#!/bin/sh
-exec "${pkgs.luaPackages.lua}/bin/lua" "$fennelCli" "$out/libexec/deps" "\$@"
-EOF
+              #!/bin/sh
+              exec "${pkgs.luaPackages.lua}/bin/lua" "$fennelCli" "$out/libexec/deps" "\$@"
+            EOF
 
             chmod +x $out/bin/deps
 
-           runHook postInstall
+            runHook postInstall
           '';
         });
       in
