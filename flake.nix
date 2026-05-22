@@ -41,6 +41,7 @@
           buildInputs = with pkgs; [
             luaPackages.fennel
             fennel-ls
+            fnlfmt
             deps-fnl-custom
             lua
             love
