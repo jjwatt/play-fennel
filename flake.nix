@@ -53,6 +53,14 @@
             export LUA_PATH="$FENNEL_SHARE/?.lua;$FENNEL_SHARE/?/init.lua;$DEPS_SHARE/?.lua;./?.lua;;"
             export PATH="${deps-fnl-custom}/bin:$PATH"
 
+            if [ "$(uname)" = "Linux" ] && [ ! -f /etc/NIXOS ]; then
+              # Map Fedora's hardware-accelerated drivers directly into the shell context
+              export LD_LIBRARY_PATH="/usr/lib64:/usr/lib64/dri:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+              
+              # Force LÖVE to use standard OpenGL desktop rendering instead of EGL/GLES
+              export SDL_RENDER_DRIVER="opengl"
+              export SDL_GL_DRIVER="libGL.so.1"
+            fi
             echo "Global 'fennel' module is now available to Lua and LOVE2D."
           '';
         };
