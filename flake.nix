@@ -43,7 +43,8 @@
             fennel-ls
             fnlfmt
             deps-fnl-custom
-            lua
+            luaPackages.luarocks
+            luaPackages.lua
             love
           ];
 
