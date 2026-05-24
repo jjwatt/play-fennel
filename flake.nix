@@ -54,10 +54,23 @@
             export PATH="${deps-fnl-custom}/bin:$PATH"
 
             if [ "$(uname)" = "Linux" ] && [ ! -f /etc/NIXOS ]; then
-              # Map Fedora's hardware-accelerated drivers directly into the shell context
-              export LD_LIBRARY_PATH="/usr/lib64:/usr/lib64/dri:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+              # Programmatically locate the active userspace graphics library directories
+              # By querying common layout paths on Fedora, Debian, and Ubuntu variants
+              HOST_GL_PATHS=""
+              for dir in \
+                "/usr/lib64" \
+                "/usr/lib64/dri" \
+                "/usr/lib/$(uname -m)-linux-gnu" \
+                "/usr/lib/$(uname -m)-linux-gnu/dri" \
+                "/usr/lib/dri"; do
+                if [ -d "$dir" ]; then
+                  HOST_GL_PATHS="$HOST_GL_PATHS:$dir"
+                fi
+              done
+
+              export LD_LIBRARY_PATH="$HOST_GL_PATHS:$LD_LIBRARY_PATH"
               
-              # Force LÖVE to use standard OpenGL desktop rendering instead of EGL/GLES
+              # Command LÖVE to favor desktop OpenGL initialization over GLES/EGL
               export SDL_RENDER_DRIVER="opengl"
               export SDL_GL_DRIVER="libGL.so.1"
             fi
