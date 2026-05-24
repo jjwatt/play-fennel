@@ -13,7 +13,7 @@
         center-x (/ width 2)
         center-y (/ height 2)]
     (love.graphics.setColor 0 1 0 1)
-    (sketches.my-noise-spiral12 love.graphics.line center-x center-y (/ width 4) time)))
+    (sketches.my-noise-spiral12 love.graphics.line love.graphics.setColor center-x center-y (/ width 4) time)))
 
 (fn love.keypressed [key]
   (when (= key "q")

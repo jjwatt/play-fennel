@@ -104,8 +104,15 @@
             (set (lastx lasty)
                  (values x y))))))))
 
+(fn get-palette-color [t]
+  "Generates a cycling RGB palette based on normalized time/phase input."
+  (let [r (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 0.0))))
+        g (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 2.0))))
+        b (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 4.0))))]
+    (values r g b 1)))
+
 (var smooth-noise-state 0)
-(lambda my-noise-spiral12 [draw-line center-x center-y max-radius t]
+(lambda my-noise-spiral12 [draw-line set-color center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))
   (var lasty (- 999))
@@ -118,11 +125,17 @@
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
 
-      (let [moving-wave (math.sin (+ (* angle (+ 3 (* 4 (math.sin t)))) (* t 6)))
+      (let [color-phase (+ (/ angle 180) (* t 3))
+            (r g b a) (get-palette-color color-phase)]
+        (set-color r g b a))
+
+      (let [glitch-time (+ t (* 0.2 (math.random)))
+            moving-wave (math.sin (+ (* angle (+ 3 (* 4 (math.sin t)))) (* glitch-time 10)))
             raw-noise (math.random)
             _ (set smooth-noise-state (+ smooth-noise-state (* (- raw-noise smooth-noise-state) 0.05)))
             combined-noise (+ (* 0.4 moving-wave) (* 0.6 smooth-noise-state))
-            sharp-spikes (^ (math.abs combined-noise) 4)
+            dynamic-power (+ 4.5 (* 2.5 (math.sin (* t 3))))
+            sharp-spikes (^ (math.abs combined-noise) dynamic-power)
             noise-factor (+ 0.1 (* 0.9 sharp-spikes))]
         (let [thisradius (+ startradius (* radius-noise noise-factor))]
             (set startradius (+ startradius (* growth-rate step-size)))
