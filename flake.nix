@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    nix-gl-host.url = "github:numtide/nix-gl-host";
   };
 
   outputs =
@@ -11,11 +12,13 @@
       self,
       nixpkgs,
       flake-utils,
+      nix-gl-host,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = import nixpkgs { inherit system; };
+
         deps-fnl-custom = pkgs.deps-fnl.overrideAttrs (oldAttrs: rec {
           installPhase = ''
             runHook preInstall
@@ -35,16 +38,36 @@
             runHook postInstall
           '';
         });
+
+        # Extract the absolute path of the nixglhost binary on Linux systems
+        nixglhost-bin = if pkgs.stdenv.isLinux then 
+          "${nix-gl-host.packages.${system}.default}/bin/nixglhost" 
+        else 
+          "";
+
+        # Creates an environment-aware execution wrapper for love
+        love-wrapped = if pkgs.stdenv.isLinux then
+          pkgs.writeShellScriptBin "love" ''
+            if [ -e /etc/NIXOS ]; then
+              # Native NixOS execution
+              exec ${pkgs.love}/bin/love "$@"
+            else
+              # Pure non-NixOS Linux execution path (Fedora)
+              # Explicitly targets the raw unwrapped store package to prevent looping errors
+              exec ${nixglhost-bin} ${pkgs.love}/bin/love "$@"
+            fi
+          ''
+        else
+          pkgs.love; # Passes through standard macOS native binary on Darwin
       in
       {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             luaPackages.fennel
             fennel-ls
-            fnlfmt
             deps-fnl-custom
             lua
-            love
+            love-wrapped
           ];
 
           shellHook = ''
@@ -53,27 +76,6 @@
             export LUA_PATH="$FENNEL_SHARE/?.lua;$FENNEL_SHARE/?/init.lua;$DEPS_SHARE/?.lua;./?.lua;;"
             export PATH="${deps-fnl-custom}/bin:$PATH"
 
-            if [ "$(uname)" = "Linux" ] && [ ! -f /etc/NIXOS ]; then
-              # Programmatically locate the active userspace graphics library directories
-              # By querying common layout paths on Fedora, Debian, and Ubuntu variants
-              HOST_GL_PATHS=""
-              for dir in \
-                "/usr/lib64" \
-                "/usr/lib64/dri" \
-                "/usr/lib/$(uname -m)-linux-gnu" \
-                "/usr/lib/$(uname -m)-linux-gnu/dri" \
-                "/usr/lib/dri"; do
-                if [ -d "$dir" ]; then
-                  HOST_GL_PATHS="$HOST_GL_PATHS:$dir"
-                fi
-              done
-
-              export LD_LIBRARY_PATH="$HOST_GL_PATHS:$LD_LIBRARY_PATH"
-              
-              # Command LÖVE to favor desktop OpenGL initialization over GLES/EGL
-              export SDL_RENDER_DRIVER="opengl"
-              export SDL_GL_DRIVER="libGL.so.1"
-            fi
             echo "Global 'fennel' module is now available to Lua and LOVE2D."
           '';
         };
