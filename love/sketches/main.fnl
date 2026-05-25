@@ -3,17 +3,20 @@
 (var time 0)
 
 (fn love.load []
-  (love.graphics.setBackgroundColor 0 0 0))
+  (love.graphics.setBackgroundColor 0 0 0)
+  (love.graphics.setLineJoin :bevel))
 
 (fn love.update [dt]
-  (set time (+ time dt)))
+  (let [speed-modifier 0.5]
+    (set time (+ time (* dt speed-modifier)))))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
         center-y (/ height 2)]
     (love.graphics.setColor 0 1 0 1)
-    (sketches.my-noise-spiral12 love.graphics.line love.graphics.setColor center-x center-y (/ width 4) time)))
+    (love.graphics.setLineWidth 2)
+    (sketches.my-noise-spiral12 love.graphics.line love.graphics.setColor center-x center-y (/ width 2.5) time)))
 
 (fn love.keypressed [key]
   (when (= key "q")

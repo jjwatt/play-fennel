@@ -90,7 +90,7 @@
         max-angle (* 360 total-loops)
         step-size 5
         growth-rate (/ max-radius max-angle)]
-    (var radius-noise (+ 5 (* 10 (math.sin t))))
+    (var radius-noise (+ 5 (* 10 (math.sin t) 0.25)))
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
       (let [noise-factor (+ 0.5 (* 0.5 (math.sin (+ angle (* t 5)))))]
@@ -117,15 +117,17 @@
   (var lastx (- 999))
   (var lasty (- 999))
 
-  (let [total-loops 10
+  (let [radius-scale (+ 0.6 (* 0.4 (math.sin (* t 2.5))))
+        dynamic-max-radius (* max-radius radius-scale)
+        total-loops 10
         max-angle (* 360 total-loops)
         step-size 5
-        growth-rate (/ max-radius max-angle)]
-    (var radius-noise (+ 10 (* 15 (math.sin (* t 2)))))
+        growth-rate (/ dynamic-max-radius max-angle)]
+    (var radius-noise (+ 10 (* 15 (math.sin (* t 0.2)))))
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
 
-      (let [color-phase (+ (/ angle 180) (* t 3))
+      (let [color-phase (+ (/ angle 180) (* t 0.5))
             (r g b a) (get-palette-color color-phase)]
         (set-color r g b a))
 
