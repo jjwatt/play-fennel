@@ -170,7 +170,6 @@
             (set (lastx lasty)
                  (values x y))))))))
 
-
 (lambda my-noise-spiral13 [draw-line set-color center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))
@@ -181,9 +180,8 @@
         total-loops 10
         max-angle (* 360 total-loops)
         step-size 5
+        radius-noise 35
         growth-rate (/ dynamic-max-radius max-angle)]
-
-    (var radius-noise 40) ;; Bumping this up since noise is inherently smoother
 
     (for [angle 0 max-angle step-size]
 
@@ -191,30 +189,31 @@
             (r g b a) (get-palette-color color-phase)]
         (set-color r g b a))
 
-      ;; --- ENTER THE PERLIN / SIMPLEX NOISE ENGINE ---
-      (let [;; 1. Scale down the angle and time.
-            ;; Noise functions change completely if you move by whole integers,
-            ;; so multiplying by tiny decimals keeps the transitions silky smooth!
-            noise-x (* angle 0.015)
+      (let [glitch-trigger (math.random)
+            glitch-factor (if (> glitch-trigger 0.85)
+                            (* 15 (math.random))
+                            0)
+
+            ;; By adding glitch-factor directly inside the noise-x lookup,
+            ;; we force the smooth wave to instantly rip open into a sharp spike!
+            noise-x (+ (* angle 0.02) glitch-factor)
             noise-y (* t 0.8)
 
-            ;; 2. Sample LÖVE's native noise (returns a value between 0.0 and 1.0)
             base-noise (love.math.noise noise-x noise-y)
 
-            ;; 3. Shape the noise profile
-            ;; We can still use your power exponent trick to pull the valleys down
-            ;; and make the peaks look sharper and more dramatic!
-            sharp-spikes (^ base-noise 3)
+            ;; Keep your high sharpening power to pin the thorns into needles
+            sharp-spikes (^ base-noise 4.5)
 
-            ;; 4. Mix back a tiny splash of raw math.random if you still want
-            ;; that gritty, cyberpunk "path-shredder" fuzz on top of the smooth waves
-            path-shredder (* 3 (math.random) (math.cos (+ angle t)))
+            ;; Bring back your micro-random white noise layer to chew up the flat paths!
+            path-shredder (* 6 (math.random) (math.cos (+ angle t)))
             noise-factor sharp-spikes]
 
         (let [thisradius (+ startradius (* radius-noise noise-factor) path-shredder)]
           (set startradius (+ startradius (* growth-rate step-size)))
 
-          (let [radians (math.rad angle)
+          ;; Re-inject a subtle angle jitter to completely stop the circles from lining up
+          (let [angle-jitter (* 1.5 base-noise)
+                radians (math.rad (+ angle angle-jitter))
                 x (+ center-x (* thisradius (math.cos radians)))
                 y (+ center-y (* thisradius (math.sin radians)))]
 
