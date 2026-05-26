@@ -127,7 +127,7 @@
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
 
-      (let [color-phase (+ (/ angle 180) (* t 0.5))
+      (let [color-phase (+ (/ angle 180) (* t 0.4))
             (r g b a) (get-palette-color color-phase)]
         (set-color r g b a))
 
@@ -138,17 +138,18 @@
             combined-noise (+ (* 0.4 moving-wave) (* 0.6 smooth-noise-state))
             dynamic-power (+ 4.5 (* 2.5 (math.sin (* t 3))))
             sharp-spikes (^ (math.abs combined-noise) dynamic-power)
+            path-shredder (* 8 (math.random) (math.cos (+ angle t)))
             noise-factor (+ 0.1 (* 0.9 sharp-spikes))]
-        (let [thisradius (+ startradius (* radius-noise noise-factor))]
+        (let [thisradius (+ startradius (* radius-noise noise-factor) path-shredder)]
             (set startradius (+ startradius (* growth-rate step-size)))
-            (let [radians (math.rad angle)
+            (let [angle-jitter (* 1 combined-noise)
+                  radians (math.rad (+ angle angle-jitter))
                   x (+ center-x (* thisradius (math.cos radians)))
                   y (+ center-y (* thisradius (math.sin radians)))]
               (when (> lastx (- 999))
                 (draw-line x y lastx lasty))
               (set (lastx lasty)
                    (values x y))))))))
-
 
 (lambda my-sin-wave [?offset
                      ?scale-val

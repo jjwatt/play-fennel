@@ -3,8 +3,8 @@
 (var time 0)
 
 (fn love.load []
-  (love.graphics.setBackgroundColor 0 0 0)
-  (love.graphics.setLineJoin :bevel))
+  (love.graphics.setLineJoin :bevel)
+  (love.graphics.setBlendMode :alpha))
 
 (fn love.update [dt]
   (let [speed-modifier 0.5]
@@ -14,7 +14,9 @@
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
         center-y (/ height 2)]
-    (love.graphics.setColor 0 1 0 1)
+    ;; (love.graphics.setColor 0 1 0 1)
+    (love.graphics.setColor 0 0 0 0.05)
+    (love.graphics.rectangle :fill 0 0 (love.graphics.getDimensions))
     (love.graphics.setLineWidth 2)
     (sketches.my-noise-spiral12 love.graphics.line love.graphics.setColor center-x center-y (/ width 2.5) time)))
 
