@@ -45,7 +45,7 @@
                 exec ${pkgs.love}/bin/love "$@"
             else
                 # Non-NixOS x86_64 Linux
-                exec ${pkgs.nixgl.auto.nixGLDefault}/bin/nixGLDefault ${pkgs.love}/bin/love "$@"
+                exec ${pkgs.nixgl.nixGLMesa}/bin/nixGLMesa ${pkgs.love}/bin/love "$@"
             fi
             ''
         else
