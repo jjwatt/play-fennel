@@ -142,7 +142,6 @@
 
       (let [glitch-time (+ t (* 0.2 (math.random)))
             ;; --- THE GHOST PATH OBLITERATOR ---
-            ;; We add (* startradius 0.1) inside the angle calculation.
             ;; As the spiral expands outward, the noise profile twists and deforms.
             ;; This stops the spikes from aligning across rings, erasing the uniform paths!
             noise-angle (+ angle (* startradius 0.5))
@@ -171,6 +170,59 @@
             (set (lastx lasty)
                  (values x y))))))))
 
+
+(lambda my-noise-spiral13 [draw-line set-color center-x center-y max-radius t]
+  (var startradius 0)
+  (var lastx (- 999))
+  (var lasty (- 999))
+
+  (let [radius-scale (+ 0.6 (* 0.4 (math.sin (* t 1.5))))
+        dynamic-max-radius (* max-radius radius-scale)
+        total-loops 10
+        max-angle (* 360 total-loops)
+        step-size 5
+        growth-rate (/ dynamic-max-radius max-angle)]
+
+    (var radius-noise 40) ;; Bumping this up since noise is inherently smoother
+
+    (for [angle 0 max-angle step-size]
+
+      (let [color-phase (+ (/ angle 180) (* t 0.4))
+            (r g b a) (get-palette-color color-phase)]
+        (set-color r g b a))
+
+      ;; --- ENTER THE PERLIN / SIMPLEX NOISE ENGINE ---
+      (let [;; 1. Scale down the angle and time.
+            ;; Noise functions change completely if you move by whole integers,
+            ;; so multiplying by tiny decimals keeps the transitions silky smooth!
+            noise-x (* angle 0.015)
+            noise-y (* t 0.8)
+
+            ;; 2. Sample LÖVE's native noise (returns a value between 0.0 and 1.0)
+            base-noise (love.math.noise noise-x noise-y)
+
+            ;; 3. Shape the noise profile
+            ;; We can still use your power exponent trick to pull the valleys down
+            ;; and make the peaks look sharper and more dramatic!
+            sharp-spikes (^ base-noise 3)
+
+            ;; 4. Mix back a tiny splash of raw math.random if you still want
+            ;; that gritty, cyberpunk "path-shredder" fuzz on top of the smooth waves
+            path-shredder (* 3 (math.random) (math.cos (+ angle t)))
+            noise-factor sharp-spikes]
+
+        (let [thisradius (+ startradius (* radius-noise noise-factor) path-shredder)]
+          (set startradius (+ startradius (* growth-rate step-size)))
+
+          (let [radians (math.rad angle)
+                x (+ center-x (* thisradius (math.cos radians)))
+                y (+ center-y (* thisradius (math.sin radians)))]
+
+            (when (> lastx (- 999))
+              (draw-line x y lastx lasty))
+
+            (set (lastx lasty)
+                 (values x y))))))))
 
 (lambda my-sin-wave [?offset
                      ?scale-val
@@ -212,5 +264,6 @@
   : my-noise-spiral
   : my-noise-spiral2
   : my-noise-spiral12
+  : my-noise-spiral13
   : my-eight-eleven
   : my-curve}
