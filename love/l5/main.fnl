@@ -19,6 +19,12 @@
   (when (<= diam 400)
       (background 180)
       (ellipse center-x center-y diam diam)
+      (strokeWeight 0)
+      (noFill)
+      (var tempdiam diam)
+      (while (> tempdiam 10)
+        (ellipse center-x center-y tempdiam tempdiam)
+        (set tempdiam (- tempdiam 10)))
       (set diam (+ diam 10))))
 
 (set _G.setup setup)
