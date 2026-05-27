@@ -103,11 +103,22 @@
             (set (lastx lasty)
                  (values x y))))))))
 
-(fn get-palette-color [t]
+(fn old-get-palette-color [t]
   "Generates a cycling RGB palette based on normalized time/phase input."
   (let [r (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 0.0))))
         g (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 2.0))))
         b (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 4.0))))]
+    (values r g b 1)))
+
+(fn get-palette-color [t]
+  "Generate a cycling cyberpunk palette (cyans, magentas, deep purples)"
+  (let [phase (* t 2.0)
+        ;; RED: High baseline keeps magentas/pinks firing constantly.
+        r (+ 0.5 (* 0.5 (math.cos phase)))
+        ;; GREEN: Heavily restricted to prevent yellow/orange mud.
+        g (+ 0.2 (* 0.2 (math.sin phase)))
+        ;; BLUE: Maxed out to keep the indigo/neon foundation strong.
+        b (+ 0.5 (* 0.5 (math.cos (+ phase 3.14))))]
     (values r g b 1)))
 (var smooth-noise-state 0)
 (lambda my-noise-spiral12 [draw-line set-color noise-fn center-x center-y max-radius t]
@@ -127,7 +138,7 @@
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
 
-      (let [color-phase (+ (/ angle 180) (* t 0.4))
+      (let [color-phase (+ (/ angle 45) (* t 1.5))
             (r g b a) (get-palette-color color-phase)]
         (set-color r g b a))
 

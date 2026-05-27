@@ -14,7 +14,6 @@
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
         center-y (/ height 2)]
-    ;; (love.graphics.setColor 0 1 0 1)
     (love.graphics.setColor 0 0 0 0.08)
     (love.graphics.rectangle :fill 0 0 (love.graphics.getDimensions))
     (love.graphics.setLineWidth 2)
