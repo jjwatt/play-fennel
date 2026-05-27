@@ -1,7 +1,9 @@
 (local sketches (require :sketches))
+(local audio (require :audio))
 
 (var time 0)
-(global canvas nil) ;; Persistent canvas to hold our trails
+(global canvas nil)
+(var bass-drone nil)
 
 (fn love.load []
   (love.graphics.setLineJoin :bevel)
@@ -13,11 +15,19 @@
   ;; Clean clear on boot
   (love.graphics.setCanvas canvas)
   (love.graphics.clear 0 0 0 1)
-  (love.graphics.setCanvas))
+  (love.graphics.setCanvas)
+
+  ;; Start generative audio.
+  ;; Generate a 55Hz (Low A note) drone!
+  (set bass-drone (audio.generate-tone 220 1.0))
+  (bass-drone:play))
 
 (fn love.update [dt]
   (let [speed-modifier 0.5]
-    (set time (+ time (* dt speed-modifier)))))
+    (set time (+ time (* dt speed-modifier))))
+  (when bass-drone
+    (let [pitch-modulator (+ 1.0 (* 0.08 (math.sin (* time 1.5))))]
+      (bass-drone:setPitch pitch-modulator))))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
@@ -28,10 +38,10 @@
 
     (love.graphics.setBlendMode :alpha)
 
-    (love.graphics.setColor 0 0 0 0.08)
+    (love.graphics.setColor 0 0 0 0.05)
     (love.graphics.rectangle :fill 0 0 width height)
 
-    (love.graphics.setLineWidth 2)
+    (love.graphics.setLineWidth 1)
     (sketches.my-noise-spiral12 love.graphics.line
                                 love.graphics.setColor
                                 love.math.noise
