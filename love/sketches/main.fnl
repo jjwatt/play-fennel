@@ -18,7 +18,7 @@
     (love.graphics.setColor 0 0 0 0.08)
     (love.graphics.rectangle :fill 0 0 (love.graphics.getDimensions))
     (love.graphics.setLineWidth 2)
-    (sketches.my-noise-spiral12 love.graphics.line love.graphics.setColor center-x center-y (/ width 2.5) time)
+    (sketches.my-noise-spiral12 love.graphics.line love.graphics.setColor love.math.noise center-x center-y (/ width 2.5) time)
     ;; (sketches.my-noise-spiral13 love.graphics.line love.graphics.setColor center-x center-y (/ width 2.5) time)
     ))
 

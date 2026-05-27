@@ -110,19 +110,19 @@
         b (+ 0.5 (* 0.5 (math.cos (+ (* t 2) 4.0))))]
     (values r g b 1)))
 (var smooth-noise-state 0)
-(lambda my-noise-spiral12 [draw-line set-color center-x center-y max-radius t]
+(lambda my-noise-spiral12 [draw-line set-color noise-fn center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))
   (var lasty (- 999))
 
-  (let [radius-scale (+ 0.6 (* 0.4 (math.sin (* t 1.5))))
+  (let [radius-scale (+ 0.6 (* 0.4 (noise-fn (math.sin (* t 1.5)))))
         dynamic-max-radius (* max-radius radius-scale)
         total-loops 10
         max-angle (* 360 total-loops)
         step-size 5
         growth-rate (/ dynamic-max-radius max-angle)]
 
-    (var radius-noise (+ 10 (* 15 (math.sin (* t 0.2)))))
+    (var radius-noise (+ 10 (* 15 (noise-fn (* t 0.2)))))
 
     (for [angle 0 max-angle step-size]
       (set radius-noise (+ radius-noise 0.09))
@@ -132,21 +132,18 @@
         (set-color r g b a))
 
       (let [glitch-time (+ t (* 0.2 (math.random)))
-            ;; As the spiral expands outward, the noise profile twists and deforms.
-            ;; This stops the spikes from aligning across rings, erasing the uniform paths!
             noise-angle (+ angle (* startradius 0.5))
-            moving-wave (math.sin (+ (* noise-angle (+ 3 (* 4 (math.sin t)))) (* glitch-time 10)))
+            moving-wave (math.sin (+ (* noise-angle (+ 3 (* 4 (noise-fn t)))) (* glitch-time 10)))
             glitch-trigger (math.random)
             glitch-factor (if (> glitch-trigger 0.85)
                               (* 15 (math.random))
                               0)
             noise-x (+ (* angle 0.02) glitch-factor)
             noise-y (* t 0.8)
-            ;; raw-noise (math.random)
-            raw-noise (love.math.noise noise-x noise-y)
+            raw-noise (noise-fn noise-x noise-y)
             _ (set smooth-noise-state (+ smooth-noise-state (* (- raw-noise smooth-noise-state) 0.05)))
             combined-noise (+ (* 0.4 moving-wave) (* 0.6 smooth-noise-state))
-            dynamic-power (+ 4.5 (* 2.5 (math.sin (* t 3))))
+            dynamic-power (+ 2.0 (* 5.0 (noise-fn (* t 1.5))))
             sharp-spikes (^ (math.abs combined-noise) dynamic-power)
 
             path-shredder (* 6 (math.random) (math.cos (+ angle t)))
