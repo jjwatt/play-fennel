@@ -24,35 +24,17 @@
         center-x (/ width 2)
         center-y (/ height 2)]
 
-    (love.graphics.setCanvas canvas)
-
+    ;; (love.graphics.setCanvas canvas)
     (love.graphics.setBlendMode :alpha)
-
-    (love.graphics.setColor 0 0 0 0.05)
-    (love.graphics.rectangle :fill 0 0 width height)
-
+    ;; (love.graphics.setColor 0 0 0 0.05)
+    ;; (love.graphics.rectangle :fill 0 0 width height)
     (love.graphics.setLineWidth 1)
-    ;; (sketches.my-noise-spiral12 love.graphics.line
-    ;;                             love.graphics.setColor
-    ;;                             love.math.noise
-    ;;                             center-x
-    ;;                             center-y
-    ;;                             (/ width 2.5)
-    ;;                             time)
-
-    (sketches.my-noise-spiral13 love.graphics.line
-                                love.graphics.setColor
-                                love.math.noise
-                                center-x
-                                center-y
-                                (/ width 2.5)
-                                time)
-
-    (love.graphics.setCanvas)
-
+    (sketches.my-eight-eleven width height)
+    ;; (love.graphics.setCanvas)
     (love.graphics.setBlendMode :alpha :premultiplied)
     (love.graphics.setColor 1 1 1 1)
-    (love.graphics.draw canvas 0 0)))
+    ;; (love.graphics.draw canvas 0 0)
+    ))
 
 (fn love.keypressed [key]
   (when (= key "q")
