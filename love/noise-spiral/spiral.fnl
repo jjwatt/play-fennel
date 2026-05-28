@@ -15,7 +15,9 @@
         ;; BLUE: Maxed out to keep the indigo/neon foundation strong.
         b (+ 0.5 (* 0.5 (math.cos (+ phase 3.14))))]
     (values r g b 1)))
+
 (var smooth-noise-state 0)
+
 (lambda my-noise-spiral12 [draw-line set-color noise-fn center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))

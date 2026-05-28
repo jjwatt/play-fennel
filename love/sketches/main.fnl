@@ -1,9 +1,7 @@
 (local sketches (require :sketches))
-(local audio (require :audio))
 
 (var time 0)
 (global canvas nil)
-(var bass-drone nil)
 
 (fn love.load []
   (love.graphics.setLineJoin :bevel)
@@ -15,19 +13,11 @@
   ;; Clean clear on boot
   (love.graphics.setCanvas canvas)
   (love.graphics.clear 0 0 0 1)
-  (love.graphics.setCanvas)
-
-  ;; Start generative audio.
-  ;; Generate a 55Hz (Low A note) drone!
-  (set bass-drone (audio.generate-tone 55 1.0))
-  (bass-drone:play))
+  (love.graphics.setCanvas))
 
 (fn love.update [dt]
   (let [speed-modifier 0.5]
-    (set time (+ time (* dt speed-modifier))))
-  (when bass-drone
-    (let [pitch-modulator (+ 1.0 (* 0.08 (math.sin (* time 1.5))))]
-      (bass-drone:setPitch pitch-modulator))))
+    (set time (+ time (* dt speed-modifier)))))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
