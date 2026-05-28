@@ -71,5 +71,59 @@
             (set (lastx lasty)
                  (values x y))))))))
 
+(lambda my-noise-spiral13 [draw-line set-color noise-fn center-x center-y max-radius t]
+  (var startradius 0)
+  (var lastx (- 999))
+  (var lasty (- 999))
 
-{: my-noise-spiral12}
+  (let [radius-scale (+ 0.6 (* 0.4 (math.sin (* t 1.5))))
+        dynamic-max-radius (* max-radius radius-scale)
+        total-loops 10
+        max-angle (* 360 total-loops)
+        step-size 5
+        radius-noise 35
+        growth-rate (/ dynamic-max-radius max-angle)]
+
+    (for [angle 0 max-angle step-size]
+
+      (let [color-phase (+ (/ angle 180) (* t 0.4))
+            (r g b a) (get-palette-color color-phase)]
+        (set-color r g b a))
+
+      (let [glitch-trigger (math.random)
+            glitch-factor (if (> glitch-trigger 0.85)
+                            (* 15 (math.random))
+                            0)
+
+            ;; By adding glitch-factor directly inside the noise-x lookup,
+            ;; we force the smooth wave to instantly rip open into a sharp spike!
+            noise-x (+ (* angle 0.02) glitch-factor)
+            noise-y (* t 0.8)
+
+            base-noise (noise-fn noise-x noise-y)
+
+            ;; Keep your high sharpening power to pin the thorns into needles
+            sharp-spikes (^ base-noise 4.5)
+
+            ;; Bring back your micro-random white noise layer to chew up the flat paths!
+            path-shredder (* 6 (math.random) (math.cos (+ angle t)))
+            noise-factor sharp-spikes]
+
+        (let [thisradius (+ startradius (* radius-noise noise-factor) path-shredder)]
+          (set startradius (+ startradius (* growth-rate step-size)))
+
+          ;; Re-inject a subtle angle jitter to completely stop the circles from lining up
+          (let [angle-jitter (* 1.5 base-noise)
+                radians (math.rad (+ angle angle-jitter))
+                x (+ center-x (* thisradius (math.cos radians)))
+                y (+ center-y (* thisradius (math.sin radians)))]
+
+            (when (> lastx (- 999))
+              (draw-line x y lastx lasty))
+
+            (set (lastx lasty)
+                 (values x y))))))))
+
+
+{: my-noise-spiral12
+ : my-noise-spiral13 }

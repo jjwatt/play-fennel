@@ -174,7 +174,7 @@
             (set (lastx lasty)
                  (values x y))))))))
 
-(lambda my-noise-spiral13 [draw-line set-color center-x center-y max-radius t]
+(lambda my-noise-spiral13 [draw-line set-color noise-fn center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))
   (var lasty (- 999))
@@ -203,7 +203,7 @@
             noise-x (+ (* angle 0.02) glitch-factor)
             noise-y (* t 0.8)
 
-            base-noise (love.math.noise noise-x noise-y)
+            base-noise (noise-fn noise-x noise-y)
 
             ;; Keep your high sharpening power to pin the thorns into needles
             sharp-spikes (^ base-noise 4.5)
