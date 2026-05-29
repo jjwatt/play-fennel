@@ -4,6 +4,7 @@
 (var time 0)
 (global canvas nil)
 (var bass-drone nil)
+(local bassline [55 65.41 49.00 43.65])
 
 (fn love.load []
   (love.graphics.setLineJoin :bevel)
@@ -26,8 +27,11 @@
   (let [speed-modifier 0.5]
     (set time (+ time (* dt speed-modifier))))
   (when bass-drone
-    (let [pitch-modulator (+ 1.0 (* 0.08 (math.sin (* time 1.5))))]
-      (bass-drone:setPitch pitch-modulator))))
+    (let [current-step (+ (% (math.floor (* time 4)) (length bassline)) 1)
+          target-frequency (. bassline current-step)
+          pitch-ratio (/ target-frequency 55)
+          vibrato (+ 1.0 (* 0.02 (math.sin (* time 8))))]
+      (bass-drone:setPitch (* pitch-ratio vibrato)))))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
