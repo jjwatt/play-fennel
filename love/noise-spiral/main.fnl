@@ -43,20 +43,20 @@
 
     (love.graphics.setLineWidth 1)
     (spiral.my-noise-spiral12 love.graphics.line
-                                love.graphics.setColor
-                                love.math.noise
-                                center-x
-                                center-y
-                                (/ width 2.5)
-                                time)
+                              love.graphics.setColor
+                              love.math.noise
+                              center-x
+                              center-y
+                              (/ width 2.5)
+                              time)
 
     (spiral.my-noise-spiral13 love.graphics.line
-                                love.graphics.setColor
-                                love.math.noise
-                                center-x
-                                center-y
-                                (/ width 2.5)
-                                time)
+                              love.graphics.setColor
+                              love.math.noise
+                              center-x
+                              center-y
+                              (/ width 2.5)
+                              time)
 
     (love.graphics.setCanvas)
 
