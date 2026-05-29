@@ -36,7 +36,12 @@
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
-        center-y (/ height 2)]
+        center-y (/ height 2)
+        startradius (/ width 2.5)
+        fns {:draw-line love.graphics.line
+             :set-color love.graphics.setColor
+             :noise-fn love.math.noise
+             :random-fn love.math.random}]
 
     (love.graphics.setCanvas canvas)
 
@@ -46,20 +51,16 @@
     (love.graphics.rectangle :fill 0 0 width height)
 
     (love.graphics.setLineWidth 1)
-    (spiral.my-noise-spiral12 love.graphics.line
-                              love.graphics.setColor
-                              love.math.noise
+    (spiral.my-noise-spiral12 fns
                               center-x
                               center-y
-                              (/ width 2.5)
+                              startradius
                               time)
 
-    (spiral.my-noise-spiral13 love.graphics.line
-                              love.graphics.setColor
-                              love.math.noise
+    (spiral.my-noise-spiral13 fns
                               center-x
                               center-y
-                              (/ width 2.5)
+                              startradius
                               time)
 
     (love.graphics.setCanvas)

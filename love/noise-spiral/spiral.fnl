@@ -18,10 +18,11 @@
 
 (var smooth-noise-state 0)
 
-(lambda my-noise-spiral12 [draw-line set-color noise-fn center-x center-y max-radius t]
+(lambda my-noise-spiral12 [{: draw-line : set-color : noise-fn : random-fn }
+                           center-x center-y max-radius t]
   (var startradius 0)
-  (var lastx (- 999))
-  (var lasty (- 999))
+  (var lastx -999)
+  (var lasty -999)
 
   (let [radius-scale (+ 0.6 (* 0.4 (noise-fn (math.sin (* t 1.5)))))
         dynamic-max-radius (* max-radius radius-scale)
@@ -39,12 +40,12 @@
             (r g b a) (get-palette-color color-phase)]
         (set-color r g b a))
 
-      (let [glitch-time (+ t (* 0.2 (math.random)))
+      (let [glitch-time (+ t (* 0.2 (random-fn)))
             noise-angle (+ angle (* startradius 0.5))
             moving-wave (math.sin (+ (* noise-angle (+ 3 (* 4 (noise-fn t)))) (* glitch-time 10)))
-            glitch-trigger (math.random)
+            glitch-trigger (random-fn)
             glitch-factor (if (> glitch-trigger 0.85)
-                              (* 15 (math.random))
+                              (* 15 (random-fn))
                               0)
             noise-x (+ (* angle 0.02) glitch-factor)
             noise-y (* t 0.8)
@@ -52,9 +53,9 @@
             _ (set smooth-noise-state (+ smooth-noise-state (* (- raw-noise smooth-noise-state) 0.05)))
             combined-noise (+ (* 0.4 moving-wave) (* 0.6 smooth-noise-state))
             dynamic-power (+ 2.0 (* 5.0 (noise-fn (* t 1.5))))
-            sharp-spikes (^ (math.abs combined-noise) dynamic-power)
+            sharp-spikes (math.pow (math.abs combined-noise) dynamic-power)
 
-            path-shredder (* 6 (math.random) (math.cos (+ angle t)))
+            path-shredder (* 6 (random-fn) (math.cos (+ angle t)))
             noise-factor (+ 0.1 (* 0.9 sharp-spikes))]
 
         (let [thisradius (+ startradius (* radius-noise noise-factor) path-shredder)]
@@ -65,13 +66,14 @@
                 x (+ center-x (* thisradius (math.cos radians)))
                 y (+ center-y (* thisradius (math.sin radians)))]
 
-            (when (> lastx (- 999))
+            (when (> lastx -999)
               (draw-line x y lastx lasty))
 
             (set (lastx lasty)
                  (values x y))))))))
 
-(lambda my-noise-spiral13 [draw-line set-color noise-fn center-x center-y max-radius t]
+(lambda my-noise-spiral13 [{: draw-line : set-color : noise-fn : random-fn}
+                           center-x center-y max-radius t]
   (var startradius 0)
   (var lastx (- 999))
   (var lasty (- 999))
@@ -90,9 +92,9 @@
             (r g b a) (get-palette-color color-phase)]
         (set-color r g b a))
 
-      (let [glitch-trigger (math.random)
+      (let [glitch-trigger (random-fn)
             glitch-factor (if (> glitch-trigger 0.85)
-                            (* 15 (math.random))
+                            (* 15 (random-fn))
                             0)
 
             ;; By adding glitch-factor directly inside the noise-x lookup,
@@ -106,7 +108,7 @@
             sharp-spikes (^ base-noise 4.5)
 
             ;; Bring back your micro-random white noise layer to chew up the flat paths!
-            path-shredder (* 6 (math.random) (math.cos (+ angle t)))
+            path-shredder (* 6 (random-fn) (math.cos (+ angle t)))
             noise-factor sharp-spikes]
 
         (let [thisradius (+ startradius (* radius-noise noise-factor) path-shredder)]
