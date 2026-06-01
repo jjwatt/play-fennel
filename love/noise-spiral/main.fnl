@@ -21,7 +21,8 @@
   ;; Start generative audio.
   ;; Generate a 55Hz (Low A note) drone!
   (set bass-drone (audio.generate-tone 55 1.0))
-  (bass-drone:play))
+  ;; (bass-drone:play)
+)
 
 (fn love.update [dt]
   (let [speed-modifier 0.5]
@@ -51,17 +52,24 @@
     (love.graphics.rectangle :fill 0 0 width height)
 
     (love.graphics.setLineWidth 1)
-    (spiral.my-noise-spiral12 fns
-                              center-x
-                              center-y
-                              startradius
-                              time)
+    (var outer-spiral 0)
+    (set outer-spiral (spiral.draw-noise-spiral12 {:draw-line love.graphics.line
+                                                   :set-color love.graphics.setColor
+                                                   :noise-fn love.math.noise
+                                                   :random-fn love.math.random
+                                                   :smooth-noise-state outer-spiral}
+                                                  center-x center-y startradius time))
+    ;; (spiral.my-noise-spiral12 fns
+    ;;                           center-x
+    ;;                           center-y
+    ;;                           startradius
+    ;;                           time)
 
-    (spiral.my-noise-spiral13 fns
-                              center-x
-                              center-y
-                              startradius
-                              time)
+    ;; (spiral.my-noise-spiral13 fns
+    ;;                           center-x
+    ;;                           center-y
+    ;;                           startradius
+    ;;                           time)
 
     (love.graphics.setCanvas)
 
