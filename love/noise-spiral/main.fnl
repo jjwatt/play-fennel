@@ -59,6 +59,13 @@
                                                    :random-fn love.math.random
                                                    :smooth-noise-state outer-spiral}
                                                   center-x center-y startradius time))
+    (var inner-spiral 0)
+    (set inner-spiral (spiral.draw-noise-spiral13 {:draw-line love.graphics.line
+                                                   :set-color love.graphics.setColor
+                                                   :noise-fn love.math.noise
+                                                   :random-fn love.math.random
+                                                   :smooth-noise-state 0}
+                                                  center-x center-y startradius time))
     ;; (spiral.my-noise-spiral12 fns
     ;;                           center-x
     ;;                           center-y
