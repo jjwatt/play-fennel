@@ -41,10 +41,10 @@
 
 (fn spiral-noise13 [noise-fn random-fn t angle base-radius _prev-smooth]
   (let [glitch-trigger (random-fn)
-        glitch-factor (if (> glitch-trigger 0.85)
+        glitch-factor (if (> glitch-trigger 1.0)
                           (* 15 (random-fn))
                           0)
-        noise-x (+ (* angle 0.02) glitch-factor)
+        noise-x (+ (* angle 0.03) glitch-factor)
         noise-y (* t 0.8)
         base-noise (noise-fn noise-x noise-y)
         spikes (math.pow base-noise 4.5)]
@@ -98,6 +98,7 @@
           (set base-radius (+ base-radius (* growth-rate step-size))))))
     (values smooth)))
 
+
 (lambda draw-noise-spiral12 [{: draw-line : set-color : noise-fn : random-fn : smooth-noise-state}
                                center-x center-y max-radius t]
   (draw-spiral {:draw-line draw-line
@@ -126,9 +127,27 @@
                 :color-scale 180
                 :radius-noise 35
                 :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (math.sin (* t 1.5)))))
-                :angle-jitter-scale 1.5
+                :angle-jitter-scale 1.0
                 :max-radius max-radius}
                center-x center-y t))
 
+(lambda draw-noise-spiral14 [{: draw-line : set-color : noise-fn : random-fn}
+                               center-x center-y max-radius t]
+  (draw-spiral {:draw-line draw-line
+                :set-color set-color
+                :noise-fn noise-fn
+                :random-fn random-fn
+                :smooth-noise-state 0
+                :noise-strategy spiral-noise13
+                :color-speed 0.4
+                :color-scale 180
+                :radius-noise 10
+                :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (math.cos (* t 1.5)))))
+                :angle-jitter-scale 1.0
+                :max-radius max-radius}
+               center-x center-y t))
+
+
 {: draw-noise-spiral12
- : draw-noise-spiral13}
+ : draw-noise-spiral13
+ : draw-noise-spiral14}

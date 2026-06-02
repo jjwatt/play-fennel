@@ -52,6 +52,7 @@
     (love.graphics.rectangle :fill 0 0 width height)
 
     (love.graphics.setLineWidth 1)
+
     (var outer-spiral 0)
     (set outer-spiral (spiral.draw-noise-spiral12 {:draw-line love.graphics.line
                                                    :set-color love.graphics.setColor
@@ -59,6 +60,7 @@
                                                    :random-fn love.math.random
                                                    :smooth-noise-state outer-spiral}
                                                   center-x center-y startradius time))
+
     (var inner-spiral 0)
     (set inner-spiral (spiral.draw-noise-spiral13 {:draw-line love.graphics.line
                                                    :set-color love.graphics.setColor
@@ -66,17 +68,14 @@
                                                    :random-fn love.math.random
                                                    :smooth-noise-state 0}
                                                   center-x center-y startradius time))
-    ;; (spiral.my-noise-spiral12 fns
-    ;;                           center-x
-    ;;                           center-y
-    ;;                           startradius
-    ;;                           time)
 
-    ;; (spiral.my-noise-spiral13 fns
-    ;;                           center-x
-    ;;                           center-y
-    ;;                           startradius
-    ;;                           time)
+    (var another-spiral 0)
+    (set another-spiral (spiral.draw-noise-spiral14 {:draw-line love.graphics.line
+                                                   :set-color love.graphics.setColor
+                                                   :noise-fn love.math.noise
+                                                   :random-fn love.math.random
+                                                   :smooth-noise-state 0}
+                                                  center-x center-y startradius time))
 
     (love.graphics.setCanvas)
 
