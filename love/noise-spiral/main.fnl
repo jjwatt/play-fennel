@@ -53,29 +53,29 @@
 
     (love.graphics.setLineWidth 1)
 
-    (var outer-spiral 0)
-    (set outer-spiral (spiral.draw-noise-spiral12 {:draw-line love.graphics.line
-                                                   :set-color love.graphics.setColor
-                                                   :noise-fn love.math.noise
-                                                   :random-fn love.math.random
-                                                   :smooth-noise-state outer-spiral}
-                                                  center-x center-y startradius time))
+    (fn with-love [config]
+      (doto config
+        (tset :draw-line love.graphics.line)
+        (tset :set-color love.graphics.setColor)
+        (tset :noise-fn love.math.noise)
+        (tset :random-fn love.math.random)))
 
-    (var inner-spiral 0)
-    (set inner-spiral (spiral.draw-noise-spiral13 {:draw-line love.graphics.line
-                                                   :set-color love.graphics.setColor
-                                                   :noise-fn love.math.noise
-                                                   :random-fn love.math.random
-                                                   :smooth-noise-state 0}
-                                                  center-x center-y startradius time))
+    (fn stateful [draw-fn]
+      (var state 0)
+      (fn [config & args]
+        (set state (draw-fn (doto (or config {})
+                              (tset :smooth-noise-state state))
+                            (unpack args)))
+        state))
 
-    (var another-spiral 0)
-    (set another-spiral (spiral.draw-noise-spiral14 {:draw-line love.graphics.line
-                                                   :set-color love.graphics.setColor
-                                                   :noise-fn love.math.noise
-                                                   :random-fn love.math.random
-                                                   :smooth-noise-state 0}
-                                                  center-x center-y startradius time))
+    (local draw-12 (stateful spiral.draw-noise-spiral12))
+    (draw-12 (with-love {}) center-x center-y startradius time)
+
+    (spiral.draw-noise-spiral13 (with-love {})
+                                center-x center-y startradius time)
+
+    (local draw-14 (stateful spiral.draw-noise-spiral14))
+    (draw-14 (with-love {}) center-x center-y startradius time)
 
     (love.graphics.setCanvas)
 
