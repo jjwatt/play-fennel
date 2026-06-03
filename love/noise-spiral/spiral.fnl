@@ -70,7 +70,7 @@
                   center-x
                   center-y
                   t]
-  (let [radius-scale (radius-scale-fn t)
+  (let [radius-scale (radius-scale-fn t noise-fn)
         dynamic-max-radius (* max-radius radius-scale)
         total-loops 10
         max-angle (* 360 total-loops)
@@ -99,55 +99,101 @@
     (values smooth)))
 
 
-(lambda draw-noise-spiral12 [{: draw-line : set-color : noise-fn : random-fn : smooth-noise-state}
-                               center-x center-y max-radius t]
-  (draw-spiral {:draw-line draw-line
-                :set-color set-color
-                :noise-fn noise-fn
-                :random-fn random-fn
-                :smooth-noise-state smooth-noise-state
-                :noise-strategy spiral-noise12
-                :color-speed 1.5
-                :color-scale 45
-                :radius-noise 10
-                :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (noise-fn (math.sin (* t 1.5))))))
-                :angle-jitter-scale 1
-                :max-radius max-radius}
-               center-x center-y t))
+(fn make-spiral [{: name
+                  : noise-strategy
+                  : color-speed
+                  : color-scale
+                  : radius-noise
+                  : radius-scale-fn
+                  : angle-jitter-scale
+                  : needs-smooth-state}]
+  (lambda [config center-x center-y max-radius t]
+    (draw-spiral {:draw-line config.draw-line
+                  :set-color config.set-color
+                  :noise-fn config.noise-fn
+                  :random-fn config.random-fn
+                  :smooth-noise-state (if needs-smooth-state
+                                          config.smooth-noise-state
+                                          0)
+                  :noise-strategy noise-strategy
+                  :color-speed color-speed
+                  :color-scale color-scale
+                  :radius-noise radius-noise
+                  :radius-scale-fn radius-scale-fn
+                  :angle-jitter-scale angle-jitter-scale
+                  :max-radius max-radius}
+                 center-x center-y t)))
 
-(lambda draw-noise-spiral13 [{: draw-line : set-color : noise-fn : random-fn}
-                               center-x center-y max-radius t]
-  (draw-spiral {:draw-line draw-line
-                :set-color set-color
-                :noise-fn noise-fn
-                :random-fn random-fn
-                :smooth-noise-state 0
-                :noise-strategy spiral-noise13
-                :color-speed 0.4
-                :color-scale 180
-                :radius-noise 35
-                :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (math.sin (* t 1.5)))))
-                :angle-jitter-scale 1.0
-                :max-radius max-radius}
-               center-x center-y t))
+(local draw-noise-spiral12
+       (make-spiral {:name "noise-spiral12"
+                     :noise-strategy spiral-noise12
+                     :color-speed 1.5
+                     :color-scale 45
+                     :radius-noise 10
+                     :radius-scale-fn (fn [t noise-fn] (+ 0.6 (* 0.4 (noise-fn (math.sin (* t 1.5))))))
+                     :angle-jitter-scale 1
+                     :needs-smooth-state true}))
 
-(lambda draw-noise-spiral14 [{: draw-line : set-color : noise-fn : random-fn}
-                               center-x center-y max-radius t]
-  (draw-spiral {:draw-line draw-line
-                :set-color set-color
-                :noise-fn noise-fn
-                :random-fn random-fn
-                :smooth-noise-state 0
-                :noise-strategy spiral-noise13
-                :color-speed 0.4
-                :color-scale 180
-                :radius-noise 10
-                :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (math.cos (* t 1.5)))))
-                :angle-jitter-scale 1.0
-                :max-radius max-radius}
-               center-x center-y t))
+(local draw-noise-spiral13
+       (make-spiral {:name "noise-spiral13"
+                     :noise-strategy spiral-noise13
+                     :color-speed 0.4
+                     :color-scale 180
+                     :radius-noise 35
+                     :radius-scale-fn (fn [t _] (+ 0.6 (* 0.4 (math.sin (* t 1.5)))))
+                     :angle-jitter-scale 1.5
+                     :needs-smooth-state false}))
+
+(local draw-noise-spiral14
+       (make-spiral {:name "noise-spiral14"
+                     :noise-strategy (fn [noise-fn random-fn t angle base-radius prev-smooth]
+                                       (let [raw (noise-fn (* t 2) angle)]
+                                         {:smooth (lerp prev-smooth raw 0.1)
+                                          :spikes (math.pow raw 2)
+                                          :combined raw}))
+                     :color-speed 3.0
+                     :color-scale 20
+                     :radius-noise 5
+                     :radius-scale-fn (fn [t] 1.0)
+                     :angle-jitter-scale 2.0
+                     :needs-smooth-state true}))
 
 
-{: draw-noise-spiral12
+;; (lambda draw-noise-spiral12 [{: draw-line : set-color : noise-fn : random-fn : smooth-noise-state}
+;;                                center-x center-y max-radius t]
+;;   (draw-spiral {:draw-line draw-line
+;;                 :set-color set-color
+;;                 :noise-fn noise-fn
+;;                 :random-fn random-fn
+;;                 :smooth-noise-state smooth-noise-state
+;;                 :noise-strategy spiral-noise12
+;;                 :color-speed 1.5
+;;                 :color-scale 45
+;;                 :radius-noise 10
+;;                 :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (noise-fn (math.sin (* t 1.5))))))
+;;                 :angle-jitter-scale 1
+;;                 :max-radius max-radius}
+;;                center-x center-y t))
+
+;; (lambda draw-noise-spiral13 [{: draw-line : set-color : noise-fn : random-fn}
+;;                                center-x center-y max-radius t]
+;;   (draw-spiral {:draw-line draw-line
+;;                 :set-color set-color
+;;                 :noise-fn noise-fn
+;;                 :random-fn random-fn
+;;                 :smooth-noise-state 0
+;;                 :noise-strategy spiral-noise13
+;;                 :color-speed 0.4
+;;                 :color-scale 180
+;;                 :radius-noise 35
+;;                 :radius-scale-fn (fn [t] (+ 0.6 (* 0.4 (math.sin (* t 1.5)))))
+;;                 :angle-jitter-scale 1.0
+;;                 :max-radius max-radius}
+;;                center-x center-y t))
+
+
+{
+ : draw-noise-spiral12
  : draw-noise-spiral13
- : draw-noise-spiral14}
+ : draw-noise-spiral14
+}
