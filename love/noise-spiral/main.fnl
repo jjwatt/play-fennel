@@ -34,6 +34,27 @@
           vibrato (+ 1.0 (* 0.02 (math.sin (* time 8))))]
       (bass-drone:setPitch (* pitch-ratio vibrato)))))
 
+(fn with-love [config]
+  (doto config
+    (tset :draw-line love.graphics.line)
+    (tset :set-color love.graphics.setColor)
+    (tset :noise-fn love.math.noise)
+    (tset :random-fn love.math.random)))
+
+(fn stateful-love [draw-fn]
+  (var state 0)
+  (fn [& args]
+    (set state (draw-fn (with-love {:smooth-noise-state state})
+                        (unpack args)))
+    state))
+
+(macro defspiral [name spiral-fn]
+  `(local ,name (stateful-love ,spiral-fn)))
+
+(defspiral draw-12 spiral.draw-noise-spiral12)
+(defspiral draw-13 spiral.draw-noise-spiral13)
+(defspiral draw-14 spiral.draw-noise-spiral14)
+
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
@@ -53,29 +74,9 @@
 
     (love.graphics.setLineWidth 1)
 
-    (fn with-love [config]
-      (doto config
-        (tset :draw-line love.graphics.line)
-        (tset :set-color love.graphics.setColor)
-        (tset :noise-fn love.math.noise)
-        (tset :random-fn love.math.random)))
-
-    (fn stateful [draw-fn]
-      (var state 0)
-      (fn [config & args]
-        (set state (draw-fn (doto (or config {})
-                              (tset :smooth-noise-state state))
-                            (unpack args)))
-        state))
-
-    (local draw-12 (stateful spiral.draw-noise-spiral12))
-    (draw-12 (with-love {}) center-x center-y startradius time)
-
-    (spiral.draw-noise-spiral13 (with-love {})
-                                center-x center-y startradius time)
-
-    (local draw-14 (stateful spiral.draw-noise-spiral14))
-    (draw-14 (with-love {}) center-x center-y startradius time)
+    (draw-12 center-x center-y startradius time)
+    (draw-13 center-x center-y startradius time)
+    (draw-14 center-x center-y startradius time)
 
     (love.graphics.setCanvas)
 
