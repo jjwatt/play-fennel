@@ -35,6 +35,7 @@
       (bass-drone:setPitch (* pitch-ratio vibrato)))))
 
 (fn with-love [config]
+  "Add love functions to config map."
   (doto config
     (tset :draw-line love.graphics.line)
     (tset :set-color love.graphics.setColor)
@@ -42,11 +43,10 @@
     (tset :random-fn love.math.random)))
 
 (fn stateful-love [draw-fn]
+  "Creates a clean state enclosure keeping tracking vars safe from global pollution."
   (var state 0)
-  (fn [& args]
-    (set state (draw-fn (with-love {:smooth-noise-state state})
-                        (unpack args)))
-    state))
+  (fn [...]
+    (set state (draw-fn (with-love {:smooth-noise-state state}) ...))))
 
 (macro defspiral [name spiral-fn]
   `(local ,name (stateful-love ,spiral-fn)))
@@ -59,11 +59,7 @@
   (let [(width height) (love.graphics.getDimensions)
         center-x (/ width 2)
         center-y (/ height 2)
-        startradius (/ width 2.5)
-        fns {:draw-line love.graphics.line
-             :set-color love.graphics.setColor
-             :noise-fn love.math.noise
-             :random-fn love.math.random}]
+        startradius (/ width 2.5)]
 
     (love.graphics.setCanvas canvas)
 
@@ -75,7 +71,7 @@
     (love.graphics.setLineWidth 1)
 
     (draw-12 center-x center-y startradius time)
-    (draw-13 center-x center-y startradius time)
+    ;; (draw-13 center-x center-y startradius time)
     (draw-14 center-x center-y startradius time)
 
     (love.graphics.setCanvas)
