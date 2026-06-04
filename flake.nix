@@ -58,8 +58,9 @@
             fennel-ls
             fnlfmt
             deps-fnl-custom
-            luaPackages.luarocks
             luaPackages.lua
+            luaPackages.luarocks
+            luaPackages.luv
             love-wrapped
           ];
 
