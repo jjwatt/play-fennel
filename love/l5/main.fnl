@@ -1,24 +1,27 @@
 (require :L5)
-(var center-x 0)
-(var center-y 0)
-(var diam 10)
 
 (fn setup []
-  (size 500 300)
-  (windowTitle "Basic Sketch")
-  (frameRate 24)
+  (windowTitle "The Wrong Way To Draw A Line (Imperative)")
+  (size 500 100)
+  (background 255)
+  (strokeWeight 5)
   (smooth)
-  (background 180)
-  (set center-x (/ width 2))
-  (set center-y (/ height 2))
-  (stroke 0)
-  (strokeWeight 1)
-  (noFill))
 
-(fn draw []
-  (when (<= diam 400)
-    (ellipse center-x center-y diam diam)
-    (set diam (+ diam 10))))
+  (var lastx -999)
+  (var lasty -999)
+  (var y 50)
+  (let [border-x 20
+        border-y 10
+        step 10
+        max-x (- width border-x)]
+    (for [x border-x max-x step]
+      (set y (+ border-y (random (- height (* 2 border-y)))))
+      (when (> lastx -999)
+        (line x y lastx lasty))
+      (set lastx x)
+      (set lasty y))))
+
+(fn draw [])
 
 (set _G.setup setup)
 (set _G.draw draw)
