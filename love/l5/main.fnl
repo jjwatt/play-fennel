@@ -12,12 +12,14 @@
   (stroke 20 50 70)
 
   (let [border-x 20
-        border-y 10
-        step 10
+        x-step 10
+        y-step 10
+        y 50
         max-x (- width border-x)]
     (let [points []]
-      (for [x border-x max-x step]
-        (let [y (+ border-y (random (- height (* 2 border-y))))]
+      (for [x border-x max-x x-step]
+        (let [y-step (- (random 20) 10)
+              y (+ y y-step)]
           (table.insert points {: x : y})))
       (for [i 1 (- (length points) 1)]
         (let [{:x x1 :y y1} (. points i)
