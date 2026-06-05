@@ -19,7 +19,7 @@
     (let [points []]
       (for [x border-x max-x x-step]
         (let [rad (radians angle)
-              y (+ 50 (* 40 (sin rad)))]
+              y (+ 50 (* 30 (pow (sin rad) 3) (love.math.noise (* rad 2))))]
           (table.insert points {: x : y})
           (set angle (+ angle 1))))
       (for [i 1 (- (length points) 1)]
