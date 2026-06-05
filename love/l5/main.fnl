@@ -3,6 +3,10 @@
 (fn custom-random [p]
   (- 1 (pow (random 1) p)))
 
+(macro inc [var-name ?by]
+  (let [increment-amount (or ?by 1)]
+    `(set ,var-name (+ ,var-name ,increment-amount))))
+
 (fn setup []
   (windowTitle "Circle")
   (size 500 300)
@@ -23,11 +27,14 @@
     (var y 0)
     (var lastx -999)
     (var lasty -999)
+    (var radius-noise (random 10))
     (for [ang 0 1440 5]
+      (set radius-noise (+ radius-noise 0.05))
       (set radius (+ radius 0.5))
+      (var this-radius (- (+ radius (* (love.math.noise radius-noise) 200)) 100))
       (var rad (radians ang))
-      (var x (+ cent-x (* radius (cos rad))))
-      (var y (+ cent-y (* radius (sin rad))))
+      (var x (+ cent-x (* this-radius (cos rad))))
+      (var y (+ cent-y (* this-radius (sin rad))))
       (when (> lastx -999)
         (line x y lastx lasty))
       (set lastx x)
