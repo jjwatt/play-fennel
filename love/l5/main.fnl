@@ -4,31 +4,30 @@
   (- 1 (pow (random 1) p)))
 
 (fn setup []
-  (windowTitle "Noisy Line")
-  (size 500 100)
+  (windowTitle "Circle")
+  (size 500 300)
   (background 255)
   (strokeWeight 5)
   (smooth)
 
   (stroke 0 30)
-  (line 20 50 480 50)
-  (stroke 20 50 70)
+  (noFill)
+  (let [radius 100
+        cent-x 250
+        cent-y 150]
+    (ellipse cent-x cent-y (* 2 radius) (* 2 radius))
 
-  (let [border-x 20
-        x-step 10
-        max-x (- width border-x)]
-    (var y-noise (random 10))
-    (var angle 0)
-    (let [points []]
-      (for [x border-x max-x x-step]
-        (let [rad (radians angle)
-              y (+ 20 (* (custom-random 0.5) 60))]
-          (table.insert points {: x : y})
-          (set angle (+ angle 1))))
-      (for [i 1 (- (length points) 1)]
-        (let [{:x x1 :y y1} (. points i)
-              {:x x2 :y y2} (. points (+ i 1))]
-          (line x1 y1 x2 y2))))))
+    (stroke 20 50 70)
+    (var x 0)
+    (var y 0)
+    (var lastx -999)
+    (var lasty -999)
+    (for [ang 0 360 5]
+      (var rad (radians ang))
+      (var x (+ cent-x (* radius (cos rad))))
+      (var y (+ cent-y (* radius (sin rad))))
+      (point x y)))
+  )
 
 (fn draw [])
 
