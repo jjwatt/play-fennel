@@ -1,5 +1,8 @@
 (require :L5)
 
+(fn custom-random [p]
+  (- 1 (pow (random 1) p)))
+
 (fn setup []
   (windowTitle "Noisy Line")
   (size 500 100)
@@ -12,14 +15,14 @@
   (stroke 20 50 70)
 
   (let [border-x 20
-        x-step 1
+        x-step 10
         max-x (- width border-x)]
     (var y-noise (random 10))
     (var angle 0)
     (let [points []]
       (for [x border-x max-x x-step]
         (let [rad (radians angle)
-              y (+ 50 (* 30 (pow (sin rad) 3) (love.math.noise (* rad 2))))]
+              y (+ 20 (* (custom-random 0.5) 60))]
           (table.insert points {: x : y})
           (set angle (+ angle 1))))
       (for [i 1 (- (length points) 1)]
