@@ -15,11 +15,13 @@
         x-step 1
         max-x (- width border-x)]
     (var y-noise (random 10))
+    (var angle 0)
     (let [points []]
       (for [x border-x max-x x-step]
-        (let [y (+ 10 (* (love.math.noise y-noise) 80))]
-          (set y-noise (+ y-noise 0.03))
-          (table.insert points {: x : y})))
+        (let [rad (radians angle)
+              y (+ 50 (* 40 (sin rad)))]
+          (table.insert points {: x : y})
+          (set angle (+ angle 1))))
       (for [i 1 (- (length points) 1)]
         (let [{:x x1 :y y1} (. points i)
               {:x x2 :y y2} (. points (+ i 1))]
