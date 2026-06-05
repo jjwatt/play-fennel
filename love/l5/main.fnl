@@ -12,37 +12,37 @@
     `(set ,var-name (+ ,var-name ,decrement-amount))))
 
 (fn setup []
-  (windowTitle "Noise Spiral 1")
+  (windowTitle "Noise Spiral 2")
   (size 500 300)
   (background 255)
-  (strokeWeight 5)
+  (strokeWeight 0.5)
   (smooth)
 
-  (stroke 0 30)
-  (noFill)
   (let [radius 100
-        cent-x 250
-        cent-y 150]
-    (ellipse cent-x cent-y (* 2 radius) (* 2 radius))
-    ;; shadow the ellipse radius
-    (var radius 10)
-    (stroke 20 50 70)
+        center-x 250
+        center-y 150]
     (var x 0)
     (var y 0)
-    (var lastx -999)
-    (var lasty -999)
-    (var radius-noise (random 10))
-    (for [ang 0 1440 5]
-      (inc! radius-noise 0.05)
-      (inc! radius 0.5)
-      (var this-radius (- (+ radius (* (love.math.noise radius-noise) 200)) 100))
-      (var rad (radians ang))
-      (var x (+ cent-x (* this-radius (cos rad))))
-      (var y (+ cent-y (* this-radius (sin rad))))
-      (when (> lastx -999)
-        (line x y lastx lasty))
-      (set lastx x)
-      (set lasty y)))
+    (for [i 0 100]
+      (var last-x -999)
+      (var last-y -999)
+      (var radius-noise (random 10))
+      (var radius 10)
+      (stroke (random 20) (random 50) (random 70) 80)
+      (var start-angle (random 360))
+      (var end-angle (random 1440))
+      (var angle-step (+ 5 (random 3)))
+      (for [angle start-angle end-angle angle-step]
+        (inc! radius-noise 0.05)
+        (inc! radius 0.5)
+        (let [this-radius (+ radius (- (* (love.math.noise radius-noise) 200) 100))
+              rad (radians angle)]
+          (set x (+ center-x (* this-radius (cos rad))))
+          (set y (+ center-y (* this-radius (sin rad))))
+          (when (> last-x -999)
+            (line x y last-x last-y))
+          (set last-x x)
+          (set last-y y)))))
   )
 
 (fn draw [])
