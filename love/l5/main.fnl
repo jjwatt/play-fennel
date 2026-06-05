@@ -9,7 +9,7 @@
 
 (macro dec! [var-name ?by]
   (let [decrement-amount (or ?by 1)]
-    `(set ,var-name (+ ,var-name ,decrement-amount))))
+    `(set ,var-name (- ,var-name ,decrement-amount))))
 
 (fn setup []
   (windowTitle "Noise Spiral 2")
