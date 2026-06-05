@@ -1,7 +1,7 @@
 (require :L5)
 
 (fn setup []
-  (windowTitle "The Wrong Way To Draw A Line (Fennel Style)")
+  (windowTitle "Noisy Line")
   (size 500 100)
   (background 255)
   (strokeWeight 5)
@@ -13,13 +13,13 @@
 
   (let [border-x 20
         x-step 10
-        y-step 10
-        y 50
         max-x (- width border-x)]
+    (var y 50)
+    (var y-noise (random 10))
     (let [points []]
       (for [x border-x max-x x-step]
-        (let [y-step (- (random 20) 10)
-              y (+ y y-step)]
+        (let [y (+ 10 (* (love.math.noise y-noise) 80))]
+          (set y-noise (+ y-noise 0.1))
           (table.insert points {: x : y})))
       (for [i 1 (- (length points) 1)]
         (let [{:x x1 :y y1} (. points i)
