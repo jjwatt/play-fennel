@@ -16,17 +16,22 @@
         cent-x 250
         cent-y 150]
     (ellipse cent-x cent-y (* 2 radius) (* 2 radius))
-
+    ;; shadow the ellipse radius
+    (var radius 10)
     (stroke 20 50 70)
     (var x 0)
     (var y 0)
     (var lastx -999)
     (var lasty -999)
-    (for [ang 0 360 5]
+    (for [ang 0 1440 5]
+      (set radius (+ radius 0.5))
       (var rad (radians ang))
       (var x (+ cent-x (* radius (cos rad))))
       (var y (+ cent-y (* radius (sin rad))))
-      (point x y)))
+      (when (> lastx -999)
+        (line x y lastx lasty))
+      (set lastx x)
+      (set lasty y)))
   )
 
 (fn draw [])
