@@ -12,14 +12,13 @@
   (stroke 20 50 70)
 
   (let [border-x 20
-        x-step 10
+        x-step 1
         max-x (- width border-x)]
-    (var y 50)
     (var y-noise (random 10))
     (let [points []]
       (for [x border-x max-x x-step]
         (let [y (+ 10 (* (love.math.noise y-noise) 80))]
-          (set y-noise (+ y-noise 0.1))
+          (set y-noise (+ y-noise 0.03))
           (table.insert points {: x : y})))
       (for [i 1 (- (length points) 1)]
         (let [{:x x1 :y y1} (. points i)
