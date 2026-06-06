@@ -15,7 +15,7 @@
   (pow (sin v) 3))
 
 (fn setup []
-  (windowTitle "Catmull-Rom Noise Circle")
+  (windowTitle "Perfect Seamless Noise Circle")
   (size 500 300)
   (background 255)
   (strokeWeight 5)
@@ -27,25 +27,43 @@
         diameter (* 2 radius)]
     (stroke 0 30)
     (noFill)
-    ;; "guide" circle
     (ellipse center-x center-y diameter diameter)
 
-    ;; Generate a continuous loop of points (0-360)
-    (let [noise-start (random 10)
-          points (let [noise-val noise-start]
-                   (fcollect [angle 0 360]
-                     (let [n-val (+ noise-start (* angle 0.1))
-                           rad-variance (* 30 (custom-noise n-val))
-                           this-radius (+ radius rad-variance)
-                           rad (radians angle)
-                           x (+ center-x (* this-radius (cos rad)))
-                           y (+ center-y (* this-radius (sin rad)))]
-                       {: x : y})))]
+    ;; 1. Generate core points using 2D circular noise space
+    (let [noise-offset-x (random 100)
+          noise-offset-y (random 100)
+          ;; This controls how dramatic/spiky the noise variations are
+          noise-radius 1.2
+
+          points (fcollect [angle 0 360]
+                   (let [rad (radians angle)
+                         ;; Calculate a circular path inside the noise map
+                         nx (+ noise-offset-x (* noise-radius (cos rad)))
+                         ny (+ noise-offset-y (* noise-radius (sin rad)))
+
+                         ;; Sample 2D noise instead of 1D noise
+                         n-val (love.math.noise nx ny)
+                         rad-variance (* 30 (custom-noise n-val))
+                         this-radius (+ radius rad-variance)]
+                     {:x (+ center-x (* this-radius (cos rad)))
+                      :y (+ center-y (* this-radius (sin rad)))}))]
+
+      ;; 2. Explicitly stitch the Catmull-Rom buffer
+      (let [first-pt (. points 1)
+            second-pt (. points 2)
+            last-pt (. points (length points))
+            penultimate-pt (. points (- (length points) 1))]
+
+        (table.insert points first-pt)
+        (table.insert points second-pt)
+        (table.insert points 1 last-pt)
+        (table.insert points 1 penultimate-pt))
+
       (stroke 20 50 70)
       (strokeWeight 1)
       (fill 20 50 70)
-      ;; The catmull-rom sliding window loop
-      ;; Need 4 points per curve segment
+
+      ;; 3. Render perfectly smooth loop
       (for [i 1 (- (length points) 3)]
         (let [p1 (. points i)
               p2 (. points (+ i 1))
