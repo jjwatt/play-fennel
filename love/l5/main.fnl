@@ -8,71 +8,43 @@
   (let [decrement-amount (or ?by 1)]
     `(set ,var-name (- ,var-name ,decrement-amount))))
 
-(fn custom-random [p]
-  (- 1 (pow (random 1) p)))
-
-(fn custom-noise [v]
-  (let [count (% v 12)]
-    (pow (sin v) count)))
+;; Global State
+(var _ang 0)
+(var _noise-val (random 100))
 
 (fn setup []
-  (windowTitle "Perfect Seamless Noise Circle")
-  (size 500 300)
+  (windowTitle "Wave Clock (functional)")
+  (size 600 600)
   (background 255)
-  (strokeWeight 5)
-  (smooth)
+  (smooth))
 
-  (let [center-x 250
-        center-y 150
-        radius 100
-        diameter (* 2 radius)]
-    (stroke 0 30)
-    (noFill)
-    (ellipse center-x center-y diameter diameter)
+(fn draw []
+  (inc! _noise-val 0.005)
+  (inc! _ang 0.5)
 
-    ;; 1. Generate core points using 2D circular noise space
-    (let [noise-offset-x (random 100)
-          noise-offset-y (random 100)
-          ;; This controls how dramatic/spiky the noise variations are
-          noise-radius 3.0
+  (when (> _ang 360)
+    (dec! _ang 360))
 
-          points (fcollect [angle 0 360]
-                   (let [rad (radians angle)
-                         ;; Calculate a circular path inside the noise map
-                         nx (+ noise-offset-x (* noise-radius (cos rad)))
-                         ny (+ noise-offset-y (* noise-radius (sin rad)))
+  (let [center-x (/ width 2)
+        center-y (/ height 2)
+        rad (radians _ang)
+        nx (+ 10 (* (cos rad) _noise-val))
+        ny (+ 10 (* (sin rad) _noise-val))
+        radius (+ 100 (* (love.math.noise nx ny) 250))
+        opp-rad (+ rad math.pi)
+        x1 (+ center-x (* radius (math.cos rad)))
+        y1 (+ center-y (* radius (math.sin rad)))
+        x2 (+ center-x (* radius (math.cos opp-rad)))
+        y2 (+ center-y (* radius (math.sin opp-rad)))]
 
-                         ;; Sample 2D noise instead of 1D noise
-                         n-val (love.math.noise nx ny)
-                         rad-variance (* 30 (custom-noise n-val))
-                         this-radius (+ radius rad-variance)]
-                     {:x (+ center-x (* this-radius (cos rad)))
-                      :y (+ center-y (* this-radius (sin rad)))}))]
-
-      ;; 2. Explicitly stitch the Catmull-Rom buffer
-      (let [first-pt (. points 1)
-            second-pt (. points 2)
-            last-pt (. points (length points))
-            penultimate-pt (. points (- (length points) 1))]
-
-        (table.insert points first-pt)
-        (table.insert points second-pt)
-        (table.insert points 1 last-pt)
-        (table.insert points 1 penultimate-pt))
-
-      (stroke 20 50 70)
-      (strokeWeight 1)
-      (fill 20 50 70)
-
-      ;; 3. Render perfectly smooth loop
-      (for [i 1 (- (length points) 3)]
-        (let [p1 (. points i)
-              p2 (. points (+ i 1))
-              p3 (. points (+ i 2))
-              p4 (. points (+ i 3))]
-          (curve p1.x p1.y p2.x p2.y p3.x p3.y p4.x p4.y))))))
-
-(fn draw [])
+    (let [stroke-noise (love.math.noise (* _noise-val 0.5))
+          r (+ 10 (* stroke-noise 40))
+          g (+ 20 (* stroke-noise 30))
+          b (+ 50 (* stroke-noise 30))
+          a 40]
+      (stroke r g b a)
+      (strokeWeight 0.5))
+    (line x1 y1 x2 y2)))
 
 (set _G.setup setup)
 (set _G.draw draw)
