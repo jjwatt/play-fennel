@@ -41,15 +41,6 @@
                            x (+ center-x (* this-radius (cos rad)))
                            y (+ center-y (* this-radius (sin rad)))]
                        {: x : y})))]
-      ;; Grab boundry elements.
-      (let [first-pt (. points 1)  ; 0 degrees
-            second-pt (. points 2) ; 1 degree
-            last-pt (. points (length points)) ; 360 degrees
-            penultimate-pt (. points (- (length points) 1))] ; 359 degrees
-        (table.insert points first-pt)
-        (table.insert points second-pt)
-        (table.insert points 1 last-pt)
-        (table.insert points 1 penultimate-pt))
       (stroke 20 50 70)
       (strokeWeight 1)
       (fill 20 50 70)
