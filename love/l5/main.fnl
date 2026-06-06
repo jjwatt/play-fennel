@@ -12,7 +12,8 @@
   (- 1 (pow (random 1) p)))
 
 (fn custom-noise [v]
-  (pow (sin v) 3))
+  (let [count (% v 12)]
+    (pow (sin v) count)))
 
 (fn setup []
   (windowTitle "Perfect Seamless Noise Circle")
@@ -33,7 +34,7 @@
     (let [noise-offset-x (random 100)
           noise-offset-y (random 100)
           ;; This controls how dramatic/spiky the noise variations are
-          noise-radius 1.2
+          noise-radius 3.0
 
           points (fcollect [angle 0 360]
                    (let [rad (radians angle)
