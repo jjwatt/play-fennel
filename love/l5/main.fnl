@@ -8,6 +8,10 @@
   (let [decrement-amount (or ?by 1)]
     `(set ,var-name (- ,var-name ,decrement-amount))))
 
+(fn draw-point [x y noise-factor]
+  (let [len (* 10 noise-factor)]
+    (rect x y len len)))
+
 (fn setup []
   (windowTitle "2D Noise Grid")
   (size 300 300)
@@ -16,14 +20,12 @@
   (let [x-start (random 10)]
     (var x-noise x-start)
     (var y-noise (random 10))
-    (for [y 0 height]
+    (for [y 0 height 5]
       (inc! y-noise 0.01)
       (set x-noise x-start)
-      (for [x 0 width]
+      (for [x 0 width 5]
         (inc! x-noise 0.01)
-        (let [alph (* (love.math.noise x-noise y-noise) 255)]
-          (stroke 0 alph)
-          (line x y (+ x 1) (+ y 1)))))))
+        (draw-point x y (love.math.noise x-noise y-noise))))))
 
 (fn draw []
   )
