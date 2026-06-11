@@ -75,8 +75,9 @@
               ay (* (- target-y b2.y) 0.05)
               mid-x (+ b1.x (* dx 0.5))
               mid-y (+ b1.y (* dy 0.5))
-              raw-effect-rad (- min-dist dist)
-              effect-rad (math.min raw-effect-rad 120)
+              ;; raw-effect-rad (- min-dist dist)
+              ;; effect-rad (math.min raw-effect-rad 120)
+              effect-rad (* b1.radius 0.35)
               new-fx (d.make-effect mid-x mid-y effect-rad)]
           (table.insert effects new-fx)
           {:bouncer (doto (d.copy-table b1)
