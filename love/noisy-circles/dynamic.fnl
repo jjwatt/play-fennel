@@ -17,7 +17,7 @@
 (fn d.make-bouncer [w h]
   {:x (d.random-range 0 w)
    :y (d.random-range 0 h)
-   :radius (d.random-range 10 60)
+   :radius (d.random-range 10 120)
    :x-move (d.random-range -2 2)
    :y-move (d.random-range -2 2)})
 
@@ -34,7 +34,7 @@
         steer-strength 0.15
         ax (* (math.cos steer-angle) steer-strength)
         ay (* (math.sin steer-angle) steer-strength)
-        max-speed 3.0
+        max-speed 2.0
         raw-x (+ c.x-move ax)
         raw-y (+ c.y-move ay)
         speed (distance 0 0 raw-x raw-y)
@@ -72,7 +72,8 @@
               ay (* (- target-y b2.y) 0.05)
               mid-x (+ b1.x (* dx 0.5))
               mid-y (+ b1.y (* dx 0.5))
-              effect-rad (- min-dist dist)
+              raw-effect-rad (- min-dist dist)
+              effect-rad (math.min raw-effect-rad 100)
               new-fx (d.make-effect mid-x mid-y effect-rad)]
           (table.insert effects new-fx)
           {:bouncer (doto (d.copy-table b1)
