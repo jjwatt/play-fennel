@@ -15,11 +15,14 @@
 
 ;; State Creators
 (fn d.make-bouncer [w h]
-  {:x (d.random-range 0 w)
-   :y (d.random-range 0 h)
-   :radius (d.random-range 10 120)
-   :x-move (d.random-range -2 2)
-   :y-move (d.random-range -2 2)})
+  (let [norm (love.math.random)
+        biased-factor (* norm norm)
+        radius (+ 10 (* biased-factor (- 150 10)))]
+    {:x (d.random-range 0 w)
+     :y (d.random-range 0 h)
+     :radius radius
+     :x-move (d.random-range -2 2)
+     :y-move (d.random-range -2 2)}))
 
 (fn d.make-effect [x y r]
   {:x x
@@ -71,7 +74,7 @@
               ax (* (- target-x b2.x) 0.05)
               ay (* (- target-y b2.y) 0.05)
               mid-x (+ b1.x (* dx 0.5))
-              mid-y (+ b1.y (* dx 0.5))
+              mid-y (+ b1.y (* dy 0.5))
               raw-effect-rad (- min-dist dist)
               effect-rad (math.min raw-effect-rad 120)
               new-fx (d.make-effect mid-x mid-y effect-rad)]
