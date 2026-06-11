@@ -7,7 +7,7 @@
               :target-dt (/ 1 60)})
 
 (fn love.load []
-  (love.window.setTitle "Noisy Circles - Fennel & LOVE2D")
+  (love.window.setTitle "Noisy Flower City - Fennel & LOVE2D")
   (let [w 1280
         h 720]
     (love.window.setMode w h)
