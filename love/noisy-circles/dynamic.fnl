@@ -34,7 +34,7 @@
         steer-strength 0.15
         ax (* (math.cos steer-angle) steer-strength)
         ay (* (math.sin steer-angle) steer-strength)
-        max-speed 2.0
+        max-speed 3.0
         raw-x (+ c.x-move ax)
         raw-y (+ c.y-move ay)
         speed (distance 0 0 raw-x raw-y)
@@ -73,7 +73,7 @@
               mid-x (+ b1.x (* dx 0.5))
               mid-y (+ b1.y (* dx 0.5))
               raw-effect-rad (- min-dist dist)
-              effect-rad (math.min raw-effect-rad 100)
+              effect-rad (math.min raw-effect-rad 120)
               new-fx (d.make-effect mid-x mid-y effect-rad)]
           (table.insert effects new-fx)
           {:bouncer (doto (d.copy-table b1)
@@ -92,18 +92,21 @@
 (fn d.draw-noisy-circle [cx cy base-radius alpha]
   (love.graphics.setColor 0.25 0.25 0.25 (/ (/ alpha 4) 255))
 
-  (let [points []]
+  (let [points []
+        time (* (love.timer.getTime) 20.0)
+        noise-anchor-x (+ (* cx 0.05) time)
+        noise-anchor-y (+ (* cy 0.05) time)]
     (for [degree 0 360 2]
       (let [rad (math.rad degree)
             cos-val (math.cos rad)
             sin-val (math.sin rad)
-            freq 1.5
-            noise-x (+ (* cx 0.01) (* cos-val freq))
-            noise-y (+ (* cy 0.01) (* sin-val freq))
+            freq 0.1
+            noise-x (+ noise-anchor-x (* cos-val freq))
+            noise-y (+ noise-anchor-y (* sin-val freq))
             base-noise (love.math.noise noise-x noise-y)
-            jitter-noise (love.math.noise (* noise-x 1.5) (* noise-y 1.5))
-            combined-noise (+ (* base-noise 0.99) (* jitter-noise 0.01))
-            variance (* base-radius 1.5 combined-noise)
+            ;; jitter-noise (love.math.noise (* noise-x 1.5) (* noise-y 1.5))
+            ;; combined-noise (+ (* base-noise 0.99) (* jitter-noise 0.01))
+            variance (* base-radius 0.15 (- base-noise 0.5))
             current-radius (+ base-radius variance)
             x (+ cx (* current-radius cos-val))
             y (+ cy (* current-radius sin-val))]
