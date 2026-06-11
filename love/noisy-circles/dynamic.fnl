@@ -37,7 +37,7 @@
         steer-strength 0.20
         ax (* (math.cos steer-angle) steer-strength)
         ay (* (math.sin steer-angle) steer-strength)
-        max-speed 3.0
+        max-speed 2.0
         raw-x (+ c.x-move ax)
         raw-y (+ c.y-move ay)
         speed (distance 0 0 raw-x raw-y)
@@ -104,13 +104,13 @@
       (let [rad (math.rad degree)
             cos-val (math.cos rad)
             sin-val (math.sin rad)
-            freq 1.5
+            freq 0.5
             noise-x (+ noise-anchor-x (* cos-val freq))
             noise-y (+ noise-anchor-y (* sin-val freq))
             base-noise (love.math.noise noise-x noise-y)
             ;; jitter-noise (love.math.noise (* noise-x 1.5) (* noise-y 1.5))
             ;; combined-noise (+ (* base-noise 0.99) (* jitter-noise 0.01))
-            variance (+ 10.0 (* base-radius 0.4))
+            variance (+ 15.0 (* base-radius 0.65))
             total-shake (* variance (- base-noise 0.5))
             current-radius (+ base-radius total-shake)
             x (+ cx (* current-radius cos-val))

@@ -11,7 +11,7 @@
   (let [w 1280
         h 720]
     (love.window.setMode w h)
-    (for [i 1 50]
+    (for [i 1 60]
       (table.insert state.bouncers (d.make-bouncer w h)))
 
     (set state.canvas (love.graphics.newCanvas w h))
@@ -40,7 +40,7 @@
         ;; Age old effects
         (each [_ e (ipairs state.effects)]
           (let [next-e (d.copy-table e)]
-            (set next-e.alpha (- e.alpha 2))
+            (set next-e.alpha (- e.alpha 5))
             (if (> next-e.alpha 0)
                 (table.insert combined-effects next-e))))
         ;; Inject new collision flares.
