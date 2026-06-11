@@ -90,7 +90,7 @@
 
 ;; Custom noise line renderer
 (fn d.draw-noisy-circle [cx cy base-radius alpha]
-  (love.graphics.setColor 0 0 0 (/ (/ alpha 4) 255))
+  (love.graphics.setColor 0.25 0.25 0.25 (/ (/ alpha 4) 255))
 
   (let [points []]
     (for [degree 0 360 2]
