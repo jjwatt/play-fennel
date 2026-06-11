@@ -97,11 +97,11 @@
       (let [rad (math.rad degree)
             cos-val (math.cos rad)
             sin-val (math.sin rad)
-            freq 2.5
+            freq 1.5
             noise-x (+ (* cx 0.01) (* cos-val freq))
             noise-y (+ (* cy 0.01) (* sin-val freq))
             base-noise (love.math.noise noise-x noise-y)
-            jitter-noise (love.math.noise (* noise-x 2.0) (* noise-y 2.0))
+            jitter-noise (love.math.noise (* noise-x 1.5) (* noise-y 1.5))
             combined-noise (+ (* base-noise 0.99) (* jitter-noise 0.01))
             variance (* base-radius 1.5 combined-noise)
             current-radius (+ base-radius variance)
