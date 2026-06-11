@@ -25,17 +25,17 @@
     (let [(w h) (love.graphics.getDimensions)
           current-bouncers state.bouncers
           collision-results []]
-      ;; Process collisions
+      ;; Process collisions.
       (each [_ b (ipairs current-bouncers)]
         (table.insert collision-results (d.process-bouncer-interactions current-bouncers b)))
 
-      ;; Update bouncer configurations
+      ;; Update bouncer configurations.
       (let [next-bouncers []]
         (each [_ res (ipairs collision-results)]
           (table.insert next-bouncers (d.move-bouncer-noise-steering res.bouncer w h)))
         (set state.bouncers next-bouncers))
 
-      ;; Collate and fade existing visual effects tracking lists
+      ;; Collate and fade existing visual effects tracking lists.
       (let [combined-effects []]
         ;; Age old effects
         (each [_ e (ipairs state.effects)]
