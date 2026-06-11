@@ -102,8 +102,8 @@
             noise-y (+ (* cy 0.01) (* sin-val freq))
             base-noise (love.math.noise noise-x noise-y)
             jitter-noise (love.math.noise (* noise-x 2.0) (* noise-y 2.0))
-            combined-noise (+ (* base-noise 0.95) (* jitter-noise 0.05))
-            variance (* base-radius 2.5 combined-noise)
+            combined-noise (+ (* base-noise 0.99) (* jitter-noise 0.01))
+            variance (* base-radius 1.5 combined-noise)
             current-radius (+ base-radius variance)
             x (+ cx (* current-radius cos-val))
             y (+ cy (* current-radius sin-val))]
