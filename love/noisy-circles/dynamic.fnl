@@ -31,7 +31,7 @@
 (fn d.move-bouncer-noise-steering [c w h]
   (let [raw-noise (love.math.noise (* c.x 0.005) (* c.y 0.005))
         steer-angle (* raw-noise math.pi 2)
-        steer-strength 0.15
+        steer-strength 0.20
         ax (* (math.cos steer-angle) steer-strength)
         ay (* (math.sin steer-angle) steer-strength)
         max-speed 3.0
@@ -93,7 +93,7 @@
   (love.graphics.setColor 0.25 0.25 0.25 (/ (/ alpha 4) 255))
 
   (let [points []
-        time (* (love.timer.getTime) 20.0)
+        time (* (love.timer.getTime) 12.0)
         noise-anchor-x (+ (* cx 0.05) time)
         noise-anchor-y (+ (* cy 0.05) time)]
     (for [degree 0 360 2]
