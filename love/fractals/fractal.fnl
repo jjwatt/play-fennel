@@ -7,9 +7,9 @@
     (if (< depth max-depth)
         (let [next-depth (+ depth 1)
               ;; Decay the length of child branches.
-              next-len (* len 0.7)
-              left-angle (- angle 30)
-              right-angle (+ angle 30)]
+              next-len (* len 0.68)
+              left-angle (- angle 25)
+              right-angle (+ angle 25)]
           (tset node :children [
                                 (create-tree x2 y2 left-angle next-len next-depth max-depth)
                                 (create-tree x2 y2 right-angle next-len next-depth max-depth)])))
