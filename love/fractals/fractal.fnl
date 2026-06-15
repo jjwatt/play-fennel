@@ -10,52 +10,68 @@
         c (lerp low2 high2 n)]
     c))
 
-(fn generate-branches [cx cy radius angle depth max-depth config time]
-  (let [points []]
-    (for [i 0 4]
-      (let [vertex-deg (+ (* i 72) angle)
-            rad (math.rad (- vertex-deg 90))
-            base-x (+ cx (* radius (math.cos rad)))
-            base-y (+ cy (* radius (math.sin rad)))
-            noise-x (love.math.noise (+ i (* depth 0.5)) (* time config.noise-speed))
-            noise-y (love.math.noise (+ i (* depth 0.5) 10.0) (* time config.noise-speed))
-            offset-scale (/ config.noise-amplitude depth)
-            dx (* (- noise-x 0.5) offset-scale)
-            dy (* (- noise-y 0.5) offset-scale)
-            px (+ base-x dx)
-            py (+ base-y dy)]
-        (table.insert points {:x px :y py})))
-    (let [node {:points points :children []}]
-      (if (< depth max-depth)
-          (let [next-depth (+ depth 1)
-                next-radius (* radius config.decay)
-                next-angle (+ angle config.twist-step)]
-            (tset node :children [(generate-branches cx cy next-radius next-angle next-depth max-depth config time)])))
-      node)))
+(fn lerp-points [p1 p2 factor]
+  {:x (lerp p1.x p2.x factor)
+   :y (lerp p1.y p2.y factor)})
 
-(fn create-root-pentagon [w h max-depth config time]
+(fn generate-sutcliffe [outer-points depth max-depth config]
+  (let [node {:points outer-points :children []}
+        sides (# outer-points)]
+    (if (< depth max-depth)
+        (let [next-depth (+ depth 1)
+              inner-points []]
+          (let [midpoints []
+                inner-ring []]
+            (for [i 1 sides]
+              (let [p1 (. outer-points i)
+                    p2 (. outer-points (+ (% i sides) 1))]
+                (table.insert midpoints (lerp-points p1 p2 0.5))))
+
+            ;; Generate inner ring vertices pushed toward the core
+            (for [i 1 sides]
+              (let [p (. outer-points i)
+                    opp-idx (+ (% (+ i 1) sides) 1)
+                    target (. midpoints opp-idx)
+                    inner-p (lerp-points p target config.strut-factor)]
+                (table.insert inner-ring inner-p)))
+
+            ;; Multi-branch ceiling
+            ;; Create 1 center child.
+            (let [child-trees [(generate-sutcliffe inner-ring next-depth max-depth config)]]
+              ;; Create 5 parameter children packed into the side clearances.
+              (for [i 1 sides]
+                (let [p1 (. outer-points i)
+                      p2 (. outer-points (+ (% i sides) 1))
+                      mid (. midpoints i)
+                      ip1 (. inner-ring i)
+                      ip2 (. inner-ring (+ (% i sides) 1))
+                      side-hull [p1 mid p2 ip2 ip1]]
+                  (table.insert child-trees (generate-sutcliffe side-hull next-depth max-depth config))))
+              (tset node :children child-trees)))))
+    node))
+
+(fn create-root-polygon [w h max-depth config]
   (let [cx (/ w 2)
         cy (/ h 2)
-        initial-radius 400
-        initial-angle 0]
-    (generate-branches cx cy initial-radius initial-angle 1 max-depth config time)))
+        outer-points []
+        sides config.num-sides
+        angle-step (/ 360 sides)]
+    (for [i 0 (- sides 1)]
+      (let [rad (math.rad (- (* i angle-step) 90))
+            px (+ cx (* 420 (math.cos rad)))
+            py (+ cy (* 420 (math.sin rad)))]
+        (table.insert outer-points {:x px :y py})))
+    (generate-sutcliffe outer-points 1 max-depth config)))
 
 (fn draw-tree [node]
-  (let [pts node.points]
-    (for [i 1 5]
-      (let [p1 (. pts i)
-            next-idx (+ (% i 5) 1)
-            p2 (. pts next-idx)]
+  (let [points node.points
+        num-points (# points)]
+    (for [i 1 num-points]
+      (let [p1 (. points i)
+            p2 (. points (+ (% i num-points) 1))]
         (love.graphics.line p1.x p1.y p2.x p2.y)))
     (each [_ child (ipairs node.children)]
-      (for [i 1 5]
-        (let [parent-p (. pts i)
-              child-p (. child.points i)]
-          (love.graphics.push :all)
-          (love.graphics.setColor 0.15 0.15 0.15 0.25)
-          (love.graphics.line parent-p.x parent-p.y child-p.x child-p.y)
-          (love.graphics.pop)))
       (draw-tree child))))
 
-{: create-root-pentagon
+{: create-root-polygon
  : draw-tree }
