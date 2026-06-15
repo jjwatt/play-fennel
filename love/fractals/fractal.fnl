@@ -10,33 +10,28 @@
         c (lerp low2 high2 n)]
     c))
 
-(fn get-inner-points [p center factor]
-  (let [nx (lerp p.x center.x factor)
-        ny (lerp p.y center.y factor)]
-    {:x nx :y ny}))
+(fn generate-branches [cx cy radius angle depth max-depth config]
+  (let [points []]
+    (for [i 0 4]
+      (let [vertex-deg (+ (* i 72) angle)
+            rad (math.rad (- vertex-deg 90))
+            px (+ cx (* radius (math.cos rad)))
+            py (+ cy (* radius (math.sin rad)))]
+        (table.insert points {:x px :y py})))
+    (let [node {:points points :children []}]
+      (if (< depth max-depth)
+          (let [next-depth (+ depth 1)
+                next-radius (* radius config.decay)
+                next-angle (+ angle config.twist-step)]
+            (tset node :children [(generate-branches cx cy next-radius next-angle next-depth max-depth config)])))
+      node)))
 
-(fn generate-branches [points depth max-depth center]
-  (let [node {:points points :children []}]
-    (if (< depth max-depth)
-        (let [next-points []]
-          (for [i 1 5]
-            (let [p (. points i)
-                  inner-p (get-inner-points p center 0.42)]
-              (table.insert next-points inner-p)))
-          (tset node :children [(generate-branches next-points (+ depth 1) max-depth center)])))
-    node))
-
-(fn create-root-pentagon [w h max-depth]
+(fn create-root-pentagon [w h max-depth config]
   (let [cx (/ w 2)
         cy (/ h 2)
-        center {:x cx :y cy}
-        outer-points []]
-    (for [deg 0 359 72]
-      (let [rad (math.rad (- deg 90))
-            px (+ cx (* 400 (math.cos rad)))
-            py (+ cy (* 400 (math.sin rad)))]
-        (table.insert outer-points {:x px :y py})))
-    (generate-branches outer-points 1 max-depth center)))
+        initial-radius 400
+        initial-angle 0]
+    (generate-branches cx cy initial-radius initial-angle 1 max-depth config)))
 
 (fn draw-tree [node]
   (let [pts node.points]
