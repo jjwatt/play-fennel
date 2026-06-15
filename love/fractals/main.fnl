@@ -6,7 +6,7 @@
   (love.window.setTitle "Ch. 8: Fractal Pentagons - Step 2")
   (let [w 1000
         h 1000
-        max-levels 5]
+        max-levels 10]
     (love.window.setMode w h)
     (set state.tree (f.create-root-pentagon w h max-levels))))
 
