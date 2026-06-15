@@ -21,7 +21,7 @@
 
 (fn love.keypressed [key]
   (let [cfg state.config]
-    (if (= key :escape) (love.event.quit)
+    (if (or (= key :q ) (= key :escape)) (love.event.quit)
         (= key :left) (set cfg.num-sides (math.max 3 (- cfg.num-sides 1)))
         (= key :right) (set cfg.num-sides (math.min 10 (+ cfg.num-sides 1)))
         (= key :up) (set cfg.strut-factor (math.min 0.48 (+ cfg.strut-factor 0.02)))
