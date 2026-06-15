@@ -1,13 +1,14 @@
 (local f (require :fractal))
 
-(local state {:root nil})
+(local state {:tree nil})
 
 (fn love.load []
-  (love.window.setTitle "Ch. 8: Fractal Pentagons - Step 1")
+  (love.window.setTitle "Ch. 8: Fractal Pentagons - Step 2")
   (let [w 1000
-        h 1000]
+        h 1000
+        max-levels 5]
     (love.window.setMode w h)
-    (set state.root (f.create-root-pentagon w h))))
+    (set state.tree (f.create-root-pentagon w h max-levels))))
 
 (fn love.update [dt])
 
@@ -15,8 +16,8 @@
   (love.graphics.clear 0.95 0.95 0.95 1)
   (love.graphics.setColor 0.15 0.15 0.15 1)
   (love.graphics.setLineWidth 2)
-  (when state.root
-    (f.draw-root state.root)))
+  (when state.tree
+    (f.draw-tree state.tree)))
 
 (fn love.keypressed [key]
   (when (= key "q")
