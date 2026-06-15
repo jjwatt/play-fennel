@@ -1,30 +1,22 @@
 
-(fn create-cog [x y angle len depth config global-rotation]
-  (let [rad (math.rad angle)
-        x2 (+ x (* (math.cos rad) len))
-        y2 (+ y (* (math.sin rad) len))
-        node {:x1 x :y1 y :x2 x2 :y2 y2 :depth depth :children []}]
-    (if (< depth config.max-depth)
-        (let [next-depth (+ depth 1)
-              next-len (* len config.decay)
-              direction (if (= (% depth 2) 0) 1 -1)
-              local-spin (* global-rotation direction depth config.speed-multiplier)]
-          (let [child-nodes []]
-            (for [i 1 config.num-children]
-              (let [base-split (/ 360 config.num-children)
-                    child-angle (+ angle (* i base-split) local-spin)
-                    child (create-cog x2 y2 child-angle next-len next-depth config global-rotation)]
-                (table.insert child-nodes child)))
-            (tset node :children child-nodes))))
-    node))
+(fn create-root-pentagon [w h]
+  (let [cent-x (/ w 2)
+        cent-y (/ h 2)
+        points []]
+    (for [deg 0 359 72]
+      (let [rad (math.rad deg)
+            px (+ cent-x (* 400 (math.cos rad)))
+            py (+ cent-y (* 400 (math.sin rad)))]
+        (table.insert points {:x px :y py})))
+    {:points points}))
 
-(fn draw-cog [node]
-  (love.graphics.setLineWidth (/ 4.0 node.depth))
-  (love.graphics.setColor 0.15 0.15 0.15 (/ 200 node.depth 255))
-  (love.graphics.line node.x1 node.y1 node.x2 node.y2)
-  (love.graphics.circle :line node.x2 node.y2 (* (- 11 node.depth) 1.5))
-  (each [_ child (ipairs node.children)]
-    (draw-cog child)))
+(fn draw-root [root]
+  (let [pts root.points]
+    (for [i 1 5]
+      (let [p1 (. pts i)
+            next-idx (+ (% i 5) 1)
+            p2 (. pts next-idx)]
+        (love.graphics.line p1.x p1.y p2.x p2.y)))))
 
-{: create-cog
- : draw-cog }
+{: create-root-pentagon
+ : draw-root }
