@@ -1,5 +1,4 @@
 
-
 (fn create-cog [x y angle len depth config global-rotation]
   (let [rad (math.rad angle)
         x2 (+ x (* (math.cos rad) len))

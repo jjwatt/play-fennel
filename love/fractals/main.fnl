@@ -3,7 +3,7 @@
 (local state {:time 0
               :rotation 0
               :config {:max-depth 5
-                       :num-children 5 
+                       :num-children 5
                        :decay 0.55
                        :speed-multiplier 1.8}})
 
