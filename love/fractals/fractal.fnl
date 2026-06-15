@@ -10,28 +10,35 @@
         c (lerp low2 high2 n)]
     c))
 
-(fn generate-branches [cx cy radius angle depth max-depth config]
+(fn generate-branches [cx cy radius angle depth max-depth config time]
   (let [points []]
     (for [i 0 4]
       (let [vertex-deg (+ (* i 72) angle)
             rad (math.rad (- vertex-deg 90))
-            px (+ cx (* radius (math.cos rad)))
-            py (+ cy (* radius (math.sin rad)))]
+            base-x (+ cx (* radius (math.cos rad)))
+            base-y (+ cy (* radius (math.sin rad)))
+            noise-x (love.math.noise (* base-x config.noise-freq) (* time config.noise-speed))
+            noise-y (love.math.noise (* base-y config.noise-freq) (* time (+ config.noise-speed 50)))
+            offset-scale (/ config.noise-amplitude depth)
+            dx (* (- noise-x 0.5) offset-scale)
+            dy (* (- noise-y 0.5) offset-scale)
+            px (+ base-x dx)
+            py (+ base-y dy)]
         (table.insert points {:x px :y py})))
     (let [node {:points points :children []}]
       (if (< depth max-depth)
           (let [next-depth (+ depth 1)
                 next-radius (* radius config.decay)
                 next-angle (+ angle config.twist-step)]
-            (tset node :children [(generate-branches cx cy next-radius next-angle next-depth max-depth config)])))
+            (tset node :children [(generate-branches cx cy next-radius next-angle next-depth max-depth config time)])))
       node)))
 
-(fn create-root-pentagon [w h max-depth config]
+(fn create-root-pentagon [w h max-depth config time]
   (let [cx (/ w 2)
         cy (/ h 2)
         initial-radius 400
         initial-angle 0]
-    (generate-branches cx cy initial-radius initial-angle 1 max-depth config)))
+    (generate-branches cx cy initial-radius initial-angle 1 max-depth config time)))
 
 (fn draw-tree [node]
   (let [pts node.points]
