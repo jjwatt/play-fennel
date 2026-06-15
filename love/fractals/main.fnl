@@ -1,9 +1,10 @@
 (local f (require :fractal))
 
 (local state {:tree nil
-              :max-levels 4
+              :max-levels 10
               :config {:num-sides 5
-                       :strut-factor 0.33}})
+                       :decay 0.55
+                       :twist-step 5.0}})
 
 (fn love.load []
   (love.window.setTitle "Ch. 8ish: Sutcliffe Polygon Sandbox")
@@ -24,6 +25,6 @@
     (if (or (= key :q ) (= key :escape)) (love.event.quit)
         (= key :left) (set cfg.num-sides (math.max 3 (- cfg.num-sides 1)))
         (= key :right) (set cfg.num-sides (math.min 10 (+ cfg.num-sides 1)))
-        (= key :up) (set cfg.strut-factor (math.min 0.48 (+ cfg.strut-factor 0.02)))
-        (= key :down) (set cfg.strut-factor (math.max 0.15 (- cfg.strut-factor 0.02))))
+        (= key :up) (set cfg.twist-step (math.min 20.0 (+ cfg.twist-step 0.5)))
+        (= key :down) (set cfg.twist-step (math.max -20.0 (- cfg.twist-step 0.5))))
     (set state.tree (f.create-root-polygon 1000 1000 state.max-levels state.config))))

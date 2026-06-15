@@ -14,62 +14,80 @@
   {:x (lerp p1.x p2.x factor)
    :y (lerp p1.y p2.y factor)})
 
-(fn generate-sutcliffe [outer-points depth max-depth config]
-  (let [node {:points outer-points :children []}
-        sides (# outer-points)]
+;; Generates a perfectly proportioned, regular polygon hull at a specific angle
+(fn generate-regular-hull [cx cy radius sides base-angle]
+  (let [pts []
+        angle-step (/ 360 sides)]
+    (for [i 0 (- sides 1)]
+      (let [rad (math.rad (- (+ (* i angle-step) base-angle) 90))
+            px (+ cx (* radius (math.cos rad)))
+            py (+ cy (* radius (math.sin rad)))]
+        (table.insert pts {:x px :y py})))
+    pts))
+
+;; Recursively creates an interlocking, twisted Sutcliffe structural tree
+(fn generate-sutcliffe [cx cy radius angle depth max-depth config]
+  (let [sides config.num-sides
+        ;; 1. Generate the outer regular polygon frame for this layer
+        outer-pts (generate-regular-hull cx cy radius sides angle)
+        node {:points outer-pts :children []}]
+
     (if (< depth max-depth)
         (let [next-depth (+ depth 1)
-              inner-points []]
-          (let [midpoints []
-                inner-ring []]
-            (for [i 1 sides]
-              (let [p1 (. outer-points i)
-                    p2 (. outer-points (+ (% i sides) 1))]
-                (table.insert midpoints (lerp-points p1 p2 0.5))))
+              ;; Decay the radius for the inner layer
+              next-radius (* radius config.decay)
+              ;; THE MAGIC LINK: Twist the next layer's orientation slightly!
+              next-angle (+ angle config.twist-step)
 
-            ;; Generate inner ring vertices pushed toward the core
-            (for [i 1 sides]
-              (let [p (. outer-points i)
-                    opp-idx (+ (% (+ i 1) sides) 1)
-                    target (. midpoints opp-idx)
-                    inner-p (lerp-points p target config.strut-factor)]
-                (table.insert inner-ring inner-p)))
+              ;; 2. Generate the inner regular frame with the structural twist
+              inner-ring (generate-regular-hull cx cy next-radius sides next-angle)
 
-            ;; Multi-branch ceiling
-            ;; Create 1 center child.
-            (let [child-trees [(generate-sutcliffe inner-ring next-depth max-depth config)]]
-              ;; Create 5 parameter children packed into the side clearances.
-              (for [i 1 sides]
-                (let [p1 (. outer-points i)
-                      p2 (. outer-points (+ (% i sides) 1))
-                      mid (. midpoints i)
-                      ip1 (. inner-ring i)
-                      ip2 (. inner-ring (+ (% i sides) 1))
-                      side-hull [p1 mid p2 ip2 ip1]]
-                  (table.insert child-trees (generate-sutcliffe side-hull next-depth max-depth config))))
-              (tset node :children child-trees)))))
+              ;; Calculate outer midpoints for packing the side clearance panels
+              midpoints []]
+          (for [i 1 sides]
+            (let [p1 (. outer-pts i)
+                  p2 (. outer-pts (+ (% i sides) 1))]
+              (table.insert midpoints (lerp-points p1 p2 0.5))))
+
+          ;; 3. Build multi-branching tree array
+          ;; Spawn 1 perfectly twisted center iris child
+          (let [child-trees [
+            (generate-sutcliffe cx cy next-radius next-angle next-depth max-depth config)
+          ]]
+
+            ;; Spawn the perimeter panel children packing the side clearways
+            (for [i 1 sides]
+              (let [p1 (. outer-pts i)
+                    p2 (. outer-pts (+ (% i sides) 1))
+                    mid (. midpoints i)
+                    ;; Grab the corresponding twisted inner vertices
+                    ip1 (. inner-ring i)
+                    ip2 (. inner-ring (+ (% i sides) 1))
+
+                    ;; Interlocking trapezoidal panel hull boundary
+                    side-hull [p1 mid p2 ip2 ip1]]
+
+                ;; We wrap the side hull raw coordinates in a terminal node block
+                (table.insert child-trees {:points side-hull :children []})))
+
+            (tset node :children child-trees))))
     node))
 
 (fn create-root-polygon [w h max-depth config]
   (let [cx (/ w 2)
         cy (/ h 2)
-        outer-points []
-        sides config.num-sides
-        angle-step (/ 360 sides)]
-    (for [i 0 (- sides 1)]
-      (let [rad (math.rad (- (* i angle-step) 90))
-            px (+ cx (* 420 (math.cos rad)))
-            py (+ cy (* 420 (math.sin rad)))]
-        (table.insert outer-points {:x px :y py})))
-    (generate-sutcliffe outer-points 1 max-depth config)))
+        initial-radius 420
+        initial-angle 0]
+    (generate-sutcliffe cx cy initial-radius initial-angle 1 max-depth config)))
 
 (fn draw-tree [node]
-  (let [points node.points
-        num-points (# points)]
-    (for [i 1 num-points]
-      (let [p1 (. points i)
-            p2 (. points (+ (% i num-points) 1))]
+  (let [pts node.points
+        num-pts (# pts)]
+    (for [i 1 num-pts]
+      (let [p1 (. pts i)
+            p2 (. pts (+ (% i num-pts) 1))]
         (love.graphics.line p1.x p1.y p2.x p2.y)))
+
     (each [_ child (ipairs node.children)]
       (draw-tree child))))
 
