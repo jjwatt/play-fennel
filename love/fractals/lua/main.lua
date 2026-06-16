@@ -3,10 +3,10 @@ local _maxlevels = 4
 local _strutFactor = 0.2
 local _strutNoise = 0
 local _frameCount = 0
-local _numSides = 8
+local _numSides = 5
 local _angleAccumulator = 0
 local _rotationSpeed = 30
-local _noiseSpeed = 0.3
+local _noiseSpeed = 0.1
 local _pentagon
 
 -- ==========================================================================
