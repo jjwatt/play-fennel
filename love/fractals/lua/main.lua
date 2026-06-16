@@ -1,12 +1,11 @@
 -- Global parameters matching Listing 8.8
 local _maxlevels = 4
-local _strutFactor = 0.2
+local _strutFactor = 0.3
 local _strutNoise = 0
-local _frameCount = 0
-local _numSides = 5
+local _numSides = 8
 local _angleAccumulator = 0
-local _rotationSpeed = 30
-local _noiseSpeed = 0.1
+local _rotationSpeed = 24
+local _noiseSpeed = 0.24
 local _pentagon
 
 -- ==========================================================================
@@ -199,11 +198,13 @@ end
 -- ==========================================================================
 
 function love.load()
+    love.window.setTitle("Listing 8.8ish: Sutcliffe Octogan Fractal, tweaked")
     love.window.setMode(1000, 1000)
     love.graphics.setLineStyle("smooth")
 
+    love.graphics.setBackgroundColor(0.96, 0.94, 0.90)
     -- Pick a random noise start position point
-    _strutNoise = love.math.random(10)
+    _strutNoise = love.math.random(2)
 end
 
 function love.update(dt)
