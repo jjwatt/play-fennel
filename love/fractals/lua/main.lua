@@ -25,15 +25,16 @@ function FractalNode.new(levels, cx, cy, r)
     if self.level < _maxLevels then
 	self:calculateMidPoints()
 
-	-- Compute the new center and radius for the inner child node.
-	local nextX = self.midPoints[1].x
-	local nextY = self.midPoints[1].y
-	local nextR = self.radius * _strutFactor
+	for i = 1, #self.midPoints  do
+	    local nextX = self.midPoints[i].x
+	    local nextY = self.midPoints[i].y
+	    local nextR = self.radius * 0.4
 
-	table.insert(
-	    self.children,
-	    FractalNode.new(self.level + 1, nextX, nextY, nextR)
-	)
+	    table.insert(
+		self.children,
+		FractalNode.new(self.level + 1, nextX, nextY, nextR)
+	    )
+	end
     end
     return self
 end
@@ -78,13 +79,13 @@ function FractalNode:drawMe()
 end
 
 function love.load()
-    love.window.setMode(750, 500)
+    love.window.setMode(750, 750)
     love.graphics.setBackgroundColor(1, 1, 1)
     love.graphics.setColor(0, 0, 0)
     love.graphics.setLineStyle("smooth")
 
     local w, h = love.graphics.getDimensions()
-    _rootFractal = FractalNode.new(1, w / 2, h / 2, 200)
+    _rootFractal = FractalNode.new(1, w / 2, h / 2, 250)
 end
 
 function love.draw()
