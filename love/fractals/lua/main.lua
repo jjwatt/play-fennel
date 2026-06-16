@@ -132,7 +132,8 @@ end
 function Branch:drawMe()
     -- Map Line weight down smoothly
     love.graphics.setLineWidth(math.max(1, 5 - self.level))
-    love.graphics.setColor(0, 0, 0, 1)
+    -- Soft charcoal gray with 70% opacity
+    love.graphics.setColor(0.15, 0.15, 0.15, 0.7)
 
     -- Draw outer frame geometries
     for i = 1, #self.outerPoints do
@@ -144,15 +145,17 @@ function Branch:drawMe()
     -- Draw inner midpoints, line connections, and projection anchors
     love.graphics.setLineWidth(0.5)
     for j = 1, #self.midPoints do
-	love.graphics.setColor(0, 0, 0, 1)
+	-- Strut lines even softer gray
+	love.graphics.setColor(0.2, 0.2, 0.2, 0.5)
 	love.graphics.line(self.midPoints[j].x, self.midPoints[j].y, self.projPoints[j].x, self.projPoints[j].y)
 
-	-- Processing ellipse(x,y,5,5) -> radius 2.5
-	love.graphics.setColor(1, 1, 1, 150 / 255)
+	-- Joint circles: filled with paper color but slightly opache
+	love.graphics.setColor(0.96, 0.94, 0.90, 0.8)
 	love.graphics.circle("fill", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("fill", self.projPoints[j].x, self.projPoints[j].y, 2.5)
 
-	love.graphics.setColor(0, 0, 0, 1)
+	-- Joint circle outlines
+	love.graphics.setColor(0.15, 0.15, 0.15, 0.6)
 	love.graphics.circle("line", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("line", self.projPoints[j].x, self.projPoints[j].y, 2.5)
     end
@@ -220,7 +223,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(1, 1, 1) -- Clean clear background color canvas pass
+    love.graphics.clear(0.96, 0.94, 0.90) -- Clean clear background color canvas pass
     if _pentagon then
 	_pentagon:drawShape()
     end
