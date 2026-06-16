@@ -1,7 +1,12 @@
--- Global parameters matching Listing 8.7
+-- Global parameters matching Listing 8.8
 local _maxlevels = 4
 local _strutFactor = 0.2
 local _strutNoise = 0
+local _frameCount = 0
+local _numSides = 8
+local _angleAccumulator = 0
+local _rotationSpeed = 30
+local _noiseSpeed = 0.3
 local _pentagon
 
 -- ==========================================================================
@@ -29,10 +34,34 @@ function Branch.new(lev, n, points)
     self.level = lev
     self.num = n
     self.outerPoints = points
-
-    -- Calculate structural marks on instantiation
     self.midPoints = self:calcMidPoints()
     self.projPoints = self:calcStrutPoints()
+    self.myBranches = {} -- Dynamic children table
+
+    -- Recursive structural branching
+    if (self.level + 1) < _maxlevels then
+	-- Construct the central inner core branch
+	local childBranch = Branch.new(self.level + 1, 0, self.projPoints)
+	table.insert(self.myBranches, childBranch)
+
+	-- Construct peripheral neighborhood sub-branches around the perimeter
+	for k = 1, #self.outerPoints do
+	    local nextk = k - 1
+	    if nextk < 1 then nextk = #self.outerPoints end
+
+	    -- Re-bundle coordinates clockwise/counter-clockwise
+	    local newPoints = {
+		self.projPoints[k],
+		self.midPoints[k],
+		self.outerPoints[k],
+		self.midPoints[nextk],
+		self.projPoints[nextk]
+	    }
+
+	    childBranch = Branch.new(self.level + 1, k, newPoints)
+	    table.insert(self.myBranches, childBranch)
+	end
+    end
 
     return self
 end
@@ -60,8 +89,7 @@ function Branch:calcMidPoint(end1, end2)
     if end1.y > end2.y then
 	my = end2.y + ((end1.y - end2.y) / 2)
     else
-	my = end1.y + ((end2.y - end1.x) / 2) -- Kept original typo math logic layout
-	my = end1.y + ((end2.y - end1.y) / 2) -- Fixed layout translation safely
+	my = end1.y + ((end2.y - end1.y) / 2)
     end
     return PointObj.new(mx, my)
 end
@@ -69,7 +97,6 @@ end
 function Branch:calcStrutPoints()
     local strutArray = {}
     for i = 1, #self.midPoints do
-	-- Processing logic: int nexti = i + 3;
 	local nexti = i + 3
 	if nexti > #self.midPoints then
 	    nexti = nexti - #self.midPoints
@@ -104,32 +131,36 @@ function Branch:calcProjPoint(mp, op)
 end
 
 function Branch:drawMe()
-    -- Map Line thickness dynamically relative to layout depth
+    -- Map Line weight down smoothly
     love.graphics.setLineWidth(math.max(1, 5 - self.level))
     love.graphics.setColor(0, 0, 0, 1)
 
-    -- Draw outer primary structural frame
+    -- Draw outer frame geometries
     for i = 1, #self.outerPoints do
 	local nexti = i + 1
 	if nexti > #self.outerPoints then nexti = 1 end
 	love.graphics.line(self.outerPoints[i].x, self.outerPoints[i].y, self.outerPoints[nexti].x, self.outerPoints[nexti].y)
     end
 
-    -- Draw inner midpoints, internal structural lines, and projection marks
+    -- Draw inner midpoints, line connections, and projection anchors
     love.graphics.setLineWidth(0.5)
     for j = 1, #self.midPoints do
-	-- Draw lines connecting midpoints to project vectors
 	love.graphics.setColor(0, 0, 0, 1)
 	love.graphics.line(self.midPoints[j].x, self.midPoints[j].y, self.projPoints[j].x, self.projPoints[j].y)
 
-	-- Draw structural marker circles (fill + line overlay matching Processing logic)
+	-- Processing ellipse(x,y,5,5) -> radius 2.5
 	love.graphics.setColor(1, 1, 1, 150 / 255)
-	love.graphics.circle("fill", self.midPoints[j].x, self.midPoints[j].y, 7.5)
-	love.graphics.circle("fill", self.projPoints[j].x, self.projPoints[j].y, 7.5)
+	love.graphics.circle("fill", self.midPoints[j].x, self.midPoints[j].y, 2.5)
+	love.graphics.circle("fill", self.projPoints[j].x, self.projPoints[j].y, 2.5)
 
 	love.graphics.setColor(0, 0, 0, 1)
-	love.graphics.circle("line", self.midPoints[j].x, self.midPoints[j].y, 7.5)
-	love.graphics.circle("line", self.projPoints[j].x, self.projPoints[j].y, 7.5)
+	love.graphics.circle("line", self.midPoints[j].x, self.midPoints[j].y, 2.5)
+	love.graphics.circle("line", self.projPoints[j].x, self.projPoints[j].y, 2.5)
+    end
+
+    -- Run layout drawing downstream recursively
+    for k = 1, #self.myBranches do
+	self.myBranches[k]:drawMe()
     end
 end
 
@@ -139,18 +170,17 @@ end
 local FractalRoot = {}
 FractalRoot.__index = FractalRoot
 
-function FractalRoot.new()
+function FractalRoot.new(startAngle)
     local self = setmetatable({}, FractalRoot)
 
     local w, h = love.graphics.getDimensions()
     local centX = w / 2
     local centY = h / 2
-
+    local angleStep = 360.0 / _numSides
     self.pointArr = {}
 
-    -- Map pentagon points cleanly in steps of 72 degrees
-    for i = 0, 359, 72 do
-	local rad = math.rad(i)
+    for i = 0, 359, angleStep do
+	local rad = math.rad(startAngle + i)
 	local x = centX + (400 * math.cos(rad))
 	local y = centY + (400 * math.sin(rad))
 	table.insert(self.pointArr, PointObj.new(x, y))
@@ -170,14 +200,27 @@ end
 
 function love.load()
     love.window.setMode(1000, 1000)
-    love.graphics.setBackgroundColor(1, 1, 1)
     love.graphics.setLineStyle("smooth")
-    _strutNoise = love.math.random(10)
 
+    -- Pick a random noise start position point
+    _strutNoise = love.math.random(10)
+end
+
+function love.update(dt)
+    -- Rotate cleanly based on time.
+    _angleAccumulator = _angleAccumulator + (_rotationSpeed * dt)
+
+    -- Advance noise smoothly based on time.
+    _strutNoise = _strutNoise + (_noiseSpeed * dt)
+    _strutFactor = love.math.noise(_strutNoise) * 2
+
+    -- Rebuild the complete structural graph
+    _pentagon = FractalRoot.new(_angleAccumulator)
 end
 
 function love.draw()
-    love.graphics.setBackgroundColor(1, 1, 1)
-    _pentagon = FractalRoot.new()
-    _pentagon:drawShape()
+    love.graphics.clear(1, 1, 1) -- Clean clear background color canvas pass
+    if _pentagon then
+	_pentagon:drawShape()
+    end
 end
