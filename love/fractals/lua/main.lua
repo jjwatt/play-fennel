@@ -6,6 +6,8 @@ local _numSides = 8
 local _angleAccumulator = 0
 local _rotationSpeed = 24
 local _noiseSpeed = 0.24
+-- local bgColor = {0.96, 0.94, 0.90}
+local bgColor = {0.08, 0.18, 0.36}
 local _pentagon
 
 -- ==========================================================================
@@ -133,7 +135,7 @@ function Branch:drawMe()
     -- Map Line weight down smoothly
     love.graphics.setLineWidth(math.max(1, 5 - self.level))
     -- Soft charcoal gray with 70% opacity
-    love.graphics.setColor(0.15, 0.15, 0.15, 0.7)
+    love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
 
     -- Draw outer frame geometries
     for i = 1, #self.outerPoints do
@@ -145,17 +147,16 @@ function Branch:drawMe()
     -- Draw inner midpoints, line connections, and projection anchors
     love.graphics.setLineWidth(0.5)
     for j = 1, #self.midPoints do
-	-- Strut lines even softer gray
-	love.graphics.setColor(0.2, 0.2, 0.2, 0.5)
+	love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
 	love.graphics.line(self.midPoints[j].x, self.midPoints[j].y, self.projPoints[j].x, self.projPoints[j].y)
 
 	-- Joint circles: filled with paper color but slightly opache
-	love.graphics.setColor(0.96, 0.94, 0.90, 0.8)
+	love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
 	love.graphics.circle("fill", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("fill", self.projPoints[j].x, self.projPoints[j].y, 2.5)
 
 	-- Joint circle outlines
-	love.graphics.setColor(0.15, 0.15, 0.15, 0.6)
+	love.graphics.setColor(0.08, 0.18, 0.36, 0.9)
 	love.graphics.circle("line", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("line", self.projPoints[j].x, self.projPoints[j].y, 2.5)
     end
@@ -205,7 +206,7 @@ function love.load()
     love.window.setMode(1000, 1000)
     love.graphics.setLineStyle("smooth")
 
-    love.graphics.setBackgroundColor(0.96, 0.94, 0.90)
+    love.graphics.setBackgroundColor(bgColor[1], bgColor[2], bgColor[3])
     -- Pick a random noise start position point
     _strutNoise = love.math.random(2)
 end
@@ -223,7 +224,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(0.96, 0.94, 0.90) -- Clean clear background color canvas pass
+    love.graphics.clear(bgColor[1], bgColor[2], bgColor[3]) -- Clean clear background color canvas pass
     if _pentagon then
 	_pentagon:drawShape()
     end
