@@ -20,10 +20,10 @@ function FractalNode.new(levels, cx, cy, r)
     self.midPoints = {}
     self.children = {}
 
-    self:calculatePoints()
+    self:caclulatePoints()
 
-    if self.level < _maxLevels then
-	self:calculateMidPoints()
+    if self.level < _maxLevel then
+	self.calculateMidPoints()
 
 	-- Compute the new center and radius for the inner child node.
 	local nextX = self.midPoints[1].x
