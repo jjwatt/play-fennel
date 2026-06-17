@@ -20,15 +20,12 @@
     `(set ,var-name (- ,var-name ,decrement-amount))))
 
 (fn setup []
-  (windowTitle "Processing: 9-12")
+  (windowTitle "Processing: 9-15")
   (size 300 300)
-  (background 116 193 206)
-  (noStroke)
-  (let [ruby (color 211 24 24 160)
-        pink (color 237 159 176)]
-    (background pink)
-    (fill ruby)
-    (rect 35 0 20 100)))
+  (colorMode HSB)
+  (for [i 0 100]
+    (stroke (* i 2.5) 255 255)
+    (line i 0 i 100)))
 
 (fn draw [])
 
