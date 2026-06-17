@@ -20,12 +20,13 @@
     `(set ,var-name (- ,var-name ,decrement-amount))))
 
 (fn setup []
-  (windowTitle "Processing: 9-15")
+  (windowTitle "Processing: 9-20: Shift from blue to green in HSB mode")
   (size 300 300)
-  (colorMode HSB)
+  (colorMode HSB 360 100 100)
   (for [i 0 100]
-    (stroke (* i 2.5) 255 255)
-    (line i 0 i 100)))
+    (let [new-hue (- 200 (* i 1.2))]
+      (stroke new-hue 70 80)
+      (line i 0 i 100))))
 
 (fn draw [])
 
