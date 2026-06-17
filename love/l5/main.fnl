@@ -20,16 +20,15 @@
     `(set ,var-name (- ,var-name ,decrement-amount))))
 
 (fn setup []
-  (windowTitle "Processing: 9-06")
+  (windowTitle "Processing: 9-12")
   (size 300 300)
   (background 116 193 206)
   (noStroke)
-  (fn draw-rects [i x]
-    (when (<= i 255)
-      (fill 129 130 87 i)
-      (rect x 20 20 60)
-      (draw-rects (+ i 51) (+ x 20))))
-  (draw-rects 51 0))
+  (let [ruby (color 211 24 24 160)
+        pink (color 237 159 176)]
+    (background pink)
+    (fill ruby)
+    (rect 35 0 20 100)))
 
 (fn draw [])
 
