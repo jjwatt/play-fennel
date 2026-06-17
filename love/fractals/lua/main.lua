@@ -134,7 +134,6 @@ end
 function Branch:drawMe()
     -- Map Line weight down smoothly
     love.graphics.setLineWidth(math.max(1, 5 - self.level))
-    -- Soft charcoal gray with 70% opacity
     love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
 
     -- Draw outer frame geometries
@@ -150,7 +149,7 @@ function Branch:drawMe()
 	love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
 	love.graphics.line(self.midPoints[j].x, self.midPoints[j].y, self.projPoints[j].x, self.projPoints[j].y)
 
-	-- Joint circles: filled with paper color but slightly opache
+	-- Joint circles
 	love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
 	love.graphics.circle("fill", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("fill", self.projPoints[j].x, self.projPoints[j].y, 2.5)
@@ -208,7 +207,7 @@ function love.load()
 
     love.graphics.setBackgroundColor(bgColor[1], bgColor[2], bgColor[3])
     -- Pick a random noise start position point
-    _strutNoise = love.math.random(2)
+    _strutNoise = love.math.random(10)
 end
 
 function love.update(dt)
