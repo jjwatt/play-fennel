@@ -200,14 +200,37 @@ end
 -- LÖVE Lifecycle Loops
 -- ==========================================================================
 
+local _paperTexture
+
 function love.load()
-    love.window.setTitle("Listing 8.8ish: Sutcliffe Octogan Fractal, tweaked")
+    love.window.setTitle("Sutcliffe Octogan Fractal, tweaked, w/ texture")
     love.window.setMode(1000, 1000)
     love.graphics.setLineStyle("smooth")
 
     love.graphics.setBackgroundColor(bgColor[1], bgColor[2], bgColor[3])
     -- Pick a random noise start position point
     _strutNoise = love.math.random(10)
+
+    -- Procedural paper texture generator
+    local w, h = love.graphics.getDimensions()
+    _paperTexture = love.graphics.newCanvas(w, h)
+
+    love.graphics.setCanvas(_paperTexture)
+    love.graphics.clear(1, 1, 1, 1)
+
+    -- Generate paper grain using thousands of tiny noise specks
+    for i = 1, 300000 do
+	local rx = love.math.random(0, w)
+	local ry = love.math.random(0, h)
+	local size = love.math.random(1, 2)
+	local grayShift = love.math.random() * 0.18
+
+	love.graphics.setColor(1 - grayShift, 1 - grayShift, 1 - grayShift)
+	love.graphics.points(rx, ry)
+    end
+
+    -- Reset rendering target back to main game screen
+    love.graphics.setCanvas()
 end
 
 function love.update(dt)
@@ -227,4 +250,10 @@ function love.draw()
     if _pentagon then
 	_pentagon:drawShape()
     end
+
+    -- Apply the sketchbook paper texture over everything
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.setBlendMode("multiply", "premultiplied")
+    love.graphics.draw(_paperTexture, 0, 0)
+    love.graphics.setBlendMode("alpha")
 end
