@@ -216,20 +216,41 @@ function love.load()
     _paperTexture = love.graphics.newCanvas(w, h)
 
     love.graphics.setCanvas(_paperTexture)
-    love.graphics.clear(1, 1, 1, 1)
+    love.graphics.clear(0.88, 0.92, 0.98, 1.0)
 
-    -- Generate paper grain using thousands of tiny noise specks
-    for i = 1, 300000 do
+    -- Create large soft organic splotches
+    for i = 1, 400 do
 	local rx = love.math.random(0, w)
 	local ry = love.math.random(0, h)
-	local size = love.math.random(1, 2)
-	local grayShift = love.math.random() * 0.18
+	local size = love.math.random(40, 150)
 
-	love.graphics.setColor(1 - grayShift, 1 - grayShift, 1 - grayShift)
-	love.graphics.points(rx, ry)
+	love.graphics.setColor(0.5, 0.6, 0.75, 0.18)
+	love.graphics.circle("fill", rx, ry, size)
     end
 
-    -- Reset rendering target back to main game screen
+    -- Create micro-fibers
+    for i = 1, 250000 do
+	local rx = love.math.random(0, w)
+	local ry = love.math.random(0, h)
+
+	-- Make a mix of dark and bright paper bleed specks
+	local mode = love.math.random()
+	if mode > 0.3 then
+	    local bright = love.math.random(0.4, 0.8)
+	    love.graphics.setColor(1, 1, 1, bright)
+	else
+	    local dark = love.math.random() * 0.3
+	    love.graphics.setColor(1 - dark, 1 - dark, 1 - dark, 1)
+	end
+	    -- Vary lengths to look like tiny paper hairs
+	if love.math.random() > 0.85 then
+	    love.graphics.setLineWidth(1)
+	    love.graphics.line(rx, ry, rx + love.math.random(2, 4), ry + love.math.random(1, 2))
+	else
+	    love.graphics.points(rx, ry)
+	end
+    end
+    -- Reset rendering target back to main game screen	
     love.graphics.setCanvas()
 end
 
