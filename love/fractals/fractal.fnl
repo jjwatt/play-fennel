@@ -6,9 +6,8 @@
   (+ low (* amt (- high low))))
 (fn mapvalue [value low1 high1 low2 high2]
   "Map from one set of values to the other"
-  (let [n (norm value low1 high1)
-        c (lerp low2 high2 n)]
-    c))
+  (let [n (norm value low1 high1)]
+    (lerp low2 high2 n)))
 
 (fn lerp-points [p1 p2 factor]
   {:x (lerp p1.x p2.x factor)
