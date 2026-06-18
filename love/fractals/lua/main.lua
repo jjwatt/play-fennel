@@ -7,7 +7,7 @@ local _angleAccumulator = 0
 local _rotationSpeed = 24
 local _noiseSpeed = 0.24
 -- local bgColor = {0.96, 0.94, 0.90}
-local bgColor = {0.08, 0.18, 0.36}
+local bgColor = {0.96, 0.94, 0.90}
 local _pentagon
 
 -- ==========================================================================
@@ -134,7 +134,7 @@ end
 function Branch:drawMe()
     -- Map Line weight down smoothly
     love.graphics.setLineWidth(math.max(1, 5 - self.level))
-    love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
+    love.graphics.setColor(0.15, 0.15, 0.15, 0.7)
 
     -- Draw outer frame geometries
     for i = 1, #self.outerPoints do
@@ -146,16 +146,16 @@ function Branch:drawMe()
     -- Draw inner midpoints, line connections, and projection anchors
     love.graphics.setLineWidth(0.5)
     for j = 1, #self.midPoints do
-	love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
+	love.graphics.setColor(0.2, 0.2, 0.2, 0.4)
 	love.graphics.line(self.midPoints[j].x, self.midPoints[j].y, self.projPoints[j].x, self.projPoints[j].y)
 
 	-- Joint circles
-	love.graphics.setColor(0.85, 0.92, 1.0, 0.6)
+	love.graphics.setColor(bgColor[1], bgColor[2], bgColor[3])
 	love.graphics.circle("fill", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("fill", self.projPoints[j].x, self.projPoints[j].y, 2.5)
 
 	-- Joint circle outlines
-	love.graphics.setColor(0.08, 0.18, 0.36, 0.9)
+	love.graphics.setColor(0.15, 0.15, 0.15, 0.5)
 	love.graphics.circle("line", self.midPoints[j].x, self.midPoints[j].y, 2.5)
 	love.graphics.circle("line", self.projPoints[j].x, self.projPoints[j].y, 2.5)
     end
@@ -224,7 +224,7 @@ function love.load()
 	local ry = love.math.random(0, h)
 	local size = love.math.random(40, 150)
 
-	love.graphics.setColor(0.5, 0.6, 0.75, 0.18)
+	love.graphics.setColor(0.75, 0.72, 0.68, 0.12)
 	love.graphics.circle("fill", rx, ry, size)
     end
 
@@ -235,12 +235,12 @@ function love.load()
 
 	-- Make a mix of dark and bright paper bleed specks
 	local mode = love.math.random()
-	if mode > 0.3 then
-	    local bright = love.math.random(0.4, 0.8)
-	    love.graphics.setColor(1, 1, 1, bright)
+	if mode > 0.4 then
+	    local dark = love.math.random() * 0.18
+	    love.graphics.setColor(1 - dark, 1 - dark, 1 - dark, 1)	    
 	else
-	    local dark = love.math.random() * 0.3
-	    love.graphics.setColor(1 - dark, 1 - dark, 1 - dark, 1)
+	    local bright = love.math.random() * 0.1
+	    love.graphics.setColor(1, 1, 1, bright)
 	end
 	    -- Vary lengths to look like tiny paper hairs
 	if love.math.random() > 0.85 then
