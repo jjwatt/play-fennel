@@ -177,13 +177,13 @@
   (for [i 1 250000]
     (let [rx (love.math.random 0 w)
           ry (love.math.random 0 h)]
-      (if (> (love.math.random) 0.4)
+      (if (< 0.4 (love.math.random))
           (let [dark (* (love.math.random) 0.18)
                 one-minus-dark (- 1 dark)]
             (love.graphics.setColor one-minus-dark one-minus-dark one-minus-dark 1))
           (let [bright (* (love.math.random) 0.1)]
             (love.graphics.setColor 1 1 1 bright)))
-      (if (> (love.math.random) 0.85)
+      (if (< 0.85 (love.math.random))
           (do
             (love.graphics.setLineWidth 1)
             (love.graphics.line rx ry (+ rx (love.math.random 2 4)) (+ ry (love.math.random 1 2))))
