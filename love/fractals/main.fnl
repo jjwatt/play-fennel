@@ -1,7 +1,7 @@
-;; Sutcliffe Pentagon Fractal Animation
-;; Based on the Processing version in Generative Art Ch. 8
+;;; Sutcliffe Pentagon Fractal Animation
+;;; Based on the Processing version in Generative Art Ch. 8
 
-;; Global Parameters
+;;; Global Parameters
 (local max-levels 4)
 (local num-sides 8)
 (local rotation-speed 24)
@@ -150,7 +150,7 @@
   (: self.root-branch :draw-me))
 
 
-;; Love Engine core loops
+;;; Love Engine core loops
 
 (fn love.load []
   (love.window.setTitle "Sutcliffe Fennel Sketchbook")
