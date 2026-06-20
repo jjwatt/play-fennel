@@ -29,26 +29,26 @@
                             :num num
                             :outer-points points
                             :my-branches []} Branch)]
-    (set self.mid-points (: self :calc-mid-points))
-    (set self.proj-points (: self :calc-strut-points))
+    (set self.mid-points (self:calc-mid-points))
+    (set self.proj-points (self:calc-strut-points))
     (if (< (+ self.level 1) max-levels)
         (do
           ;; Central inner core branch
-          (local child-branch (Branch.new (+ self.level 1) 0 self.proj-points))
-          (table.insert self.my-branches child-branch)
+          (let [child-branch (Branch.new (+ self.level 1) 0 self.proj-points)]
+            (table.insert self.my-branches child-branch))
 
           ;; Peripheral sub-branches around the perimiter
           (for [k 1 (# self.outer-points)]
             (var nextk (- k 1))
             (if (< nextk 1)
                 (set nextk (# self.outer-points)))
-            (local new-points [(. self.proj-points k)
-                               (. self.mid-points k)
-                               (. self.outer-points k)
-                               (. self.mid-points nextk)
-                               (. self.proj-points nextk)])
-            (local peripheral-branch (Branch.new (+ self.level 1) k new-points))
-            (table.insert self.my-branches peripheral-branch))))
+            (let [new-points [(. self.proj-points k)
+                              (. self.mid-points k)
+                              (. self.outer-points k)
+                              (. self.mid-points nextk)
+                              (. self.proj-points nextk)]
+                  peripheral-branch (Branch.new (+ self.level 1) k new-points)]
+              (table.insert self.my-branches peripheral-branch)))))
     self))
 
 (fn Branch.calc-mid-points [self]
