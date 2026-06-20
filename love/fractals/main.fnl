@@ -55,10 +55,10 @@
   (local mp-array [])
   (for [i 1 (# self.outer-points)]
     (var nexti (+ i 1))
-    (if (> nexti (# self.outer-points)) (set nexti 1))
-    (let [this-mp (: self :calc-mid-point
-                     (. self.outer-points i)
-                     (. self.outer-points nexti))]
+    (if (< (# self.outer-points) nexti) (set nexti 1))
+    (let [this-mp (self:calc-mid-point
+                   (. self.outer-points i)
+                   (. self.outer-points nexti))]
       (table.insert mp-array this-mp)))
   mp-array)
 
@@ -75,11 +75,11 @@
   (local strut-array [])
   (for [i 1 (# self.mid-points)]
     (var nexti (+ i 3))
-    (if (> nexti (# self.mid-points))
+    (if (< (# self.mid-points) nexti)
         (set nexti (- nexti (# self.mid-points))))
-    (let [this-sp (: self :calc-proj-point
-                     (. self.mid-points i)
-                     (. self.outer-points nexti))]
+    (let [this-sp (self:calc-proj-point
+                   (. self.mid-points i)
+                   (. self.outer-points nexti))]
       (table.insert strut-array this-sp)))
   strut-array)
 
@@ -102,7 +102,7 @@
   ;; Draw outer frames
   (for [i 1 (# self.outer-points)]
     (var nexti (+ i 1))
-    (when (> nexti (# self.outer-points)) (set nexti 1))
+    (when (< (# self.outer-points) nexti) (set nexti 1))
     (love.graphics.line (. self.outer-points i :x)
                         (. self.outer-points i :y)
                         (. self.outer-points nexti :x)
@@ -128,7 +128,7 @@
 
   ;; Cascade down by child nodes.
   (each [_ child (ipairs self.my-branches)]
-    (: child :draw-me)))
+    (child:draw-me)))
 
 (local FractalRoot {})
 (set FractalRoot.__index FractalRoot)
@@ -197,8 +197,9 @@
   (set pentagon (FractalRoot.new angle-accumulator)))
 
 (fn love.draw []
-  (love.graphics.clear (. bg-color 1) (. bg-color 2) (. bg-color 3))
-  (if pentagon (: pentagon :draw-shape))
+  (let [[r g b] bg-color]
+    (love.graphics.clear r g b))
+  (if pentagon (pentagon:draw-shape))
 
   ;; Overlay sketchbook texture mapping using multiply
   (love.graphics.setColor 1 1 1 1)
