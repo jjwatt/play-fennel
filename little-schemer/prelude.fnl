@@ -20,13 +20,19 @@
     (func val)))
 ;; (fn atom? [t]
 ;;   (and (not= (type t) :nil) (not= (type t) :table)))
-(fn atom? [t]
-  (not= (type t) :table))
+;; (fn atom? [t]
+;;   (not= (type t) :table))
 ;; "safe" list
+;; (fn list? [t]
+;;   (and (not (atom? t))
+;;        (not= (type t) :nil)
+;;        (= (type t) :table)))
+(fn null? [o]
+  (= nil o))
 (fn list? [t]
-  (and (not (atom? t))
-       (not= (type t) :nil)
-       (= (type t) :table)))
+  (= (type t) :table))
+(fn atom? [t]
+  (and (not (list? t) (not (null? t)))))
 (fn pair? [t]
   (list? t))
 ;; unsafe empty. will throw on atom
@@ -42,7 +48,7 @@
 ;; safe empty based on null?
 (fn empty? [t]
   (null? t))
-;; Chapter 1
+;;; Chapter 1
 ;; Primitive
 (fn s-expr? [x]
   (or (atom? x)
@@ -50,9 +56,14 @@
 ;; Probably wrong
 (fn eq? [a b]
   (= a b))
-;; Chapter 2
+;;; Chapter 2
 ;; lat? list of atoms?
-;; "safe" because it checks assumes a list
+;; Like the book (not safe)
+(fn lat? [l]
+  (if (null? l) true
+      (atom? (car l)) (lat? (cdr l))
+      false))
+;; "safe" because it checks if it's a list
 (fn lat? [l]
   (if (atom? l) false
       (if (empty? l)
@@ -116,9 +127,12 @@
    false
    (or (eq? (car lat) a)
        (member? a (cdr lat)))))
+
+;;; Chapter 3: Cons the Magnificient
+
 (fn rember [a lat]
   (if
    (null? lat) []
-   (eq? a (car lat)) (cdr lat)
+   (eq? (car lat) a) (cdr lat)
    (cons (car lat) (rember a (cdr lat)))))
 
