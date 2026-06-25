@@ -51,8 +51,8 @@
             max-radius (if (< current-note.midi 45)
                            (* base-radius 6)
                            (* base-radius 2.5))
-            lifespan (if (< current-note.midi 45) 1.2 0.5)
-            (x y) (if (= track-num 1)
+            lifespan (if (< current-note.midi 45) 2.0 0.8)
+            (x y) (if (= track-num 4)
                       (values (/ width 2) (/ height 2))
                       (values (love.math.random (* width 0.2) (* width 0.8))
                               (love.math.random (* height 0.3) (* height 0.7))))]
@@ -89,13 +89,14 @@
             line-width (* 4 (- 1 pct))
             (r g b) (values (. event.color 1) (. event.color 2) (. event.color 3))]
         (love.graphics.setLineWidth line-width)
+
         ;; Color shifts based on event age.
         (love.graphics.setColor r g b current-alpha)
 
         ;; Draw primary ring.
-        (love.graphics.circle :line event.x event.y (* event.max-radius pct))
+        (love.graphics.circle :line event.x event.y (* event.max-radius pct 2))
         ;; Draw a secondary trailing echo ring at half the speed
-        (love.graphics.circle :line event.x event.y (* event.max-radius pct 0.5))))
+        (love.graphics.circle :line event.x event.y (* event.max-radius pct 0.5 2))))
     
     (love.graphics.setCanvas)
     
