@@ -4,20 +4,27 @@
 (var audio-source nil)
 
 (global canvas nil)
-(global song-data (json.decode (love.filesystem.read "hy-op.json")))
+(global song-data (json.decode (love.filesystem.read "impeachy.json")))
 (global track-configs
         {1 {:notes (. song-data.tracks 1 :notes)
             :next-idx 1
-            :color [0.2 0.6 1.0]}
+            :color [0.15 0.15 0.6]}
+         2 {:notes (. song-data.tracks 2 :notes)
+            :next-idx 1
+            :color [0.4 0.2 0.7]}
+         3 {:notes (. song-data.tracks 3 :notes)
+            :next-idx 1
+            :color [0.8 0.2 0.6]}
          4 {:notes (. song-data.tracks 4 :notes)
             :next-idx 1
-            :color [1.0 0.4 0.4]}
+            :color [1.0 0.4 0.5]}
          5 {:notes (. song-data.tracks 5 :notes)
             :next-idx 1
-            :color [0.4 1.0 0.4]}
-         7 {:notes (. song-data.tracks 7 :notes)
+            :color [1.0 0.6 0.4]}
+         6 {:notes (. song-data.tracks 6 :notes)
             :next-idx 1
-            :color [1.0 0.8 0.2]}})
+            :color [1.0 0.8 0.5]}
+         })
 (global visual-events [])
 
 (fn love.load []
@@ -27,7 +34,7 @@
   (love.graphics.setCanvas canvas)
   (love.graphics.clear 0 0 0 1)
   (love.graphics.setCanvas)
-  (set audio-source (love.audio.newSource "hy-op.wav" :stream))
+  (set audio-source (love.audio.newSource "impeachy.wav" :stream))
   (love.audio.play audio-source))
 
 (fn love.update [dt]
