@@ -1,0 +1,79 @@
+(local json (require :json))
+
+(var time 0)
+(global canvas nil)
+(global song-data (json.decode (love.filesystem.read "hy-op.json")))
+(global notes (. song-data.tracks 1 :notes))
+(global visual-events [])
+;; Keep track of the next note index we are waiting to play
+(var next-note-idx 1)
+(var audio-source nil)
+
+(fn love.load []
+  (love.graphics.setLineJoin :bevel)
+
+  ;; Create a canvas matching the window size
+  (let [(w h) (love.graphics.getDimensions)]
+    (set canvas (love.graphics.newCanvas w h)))
+
+  ;; Clean clear on boot
+  (love.graphics.setCanvas canvas)
+  (love.graphics.clear 0 0 0 1)
+  (love.graphics.setCanvas)
+  (set audio-source (love.audio.newSource "hy-op.wav" :stream))
+  (love.audio.play audio-source))
+
+(fn love.update [dt]
+  (if (and audio-source (audio-source:isPlaying))
+      (set time (audio-source:tell :seconds))
+      (set time (+ time dt)))
+  ;; Check for new notes to trigger
+  (let [current-note (. notes next-note-idx)
+        (w h) (love.graphics.getDimensions)]
+    (when (and current-note (<= current-note.time time))
+      (table.insert visual-events
+                    {:x (love.math.random 100 (- w 100))
+                     :y (love.math.random 100 (- h 100))
+                     ;; Map MIDI pitch to base radius size
+                     :max-radius (* current-note.midi 2)
+                     ;; Use velocity (0 to 1) to determine alpha
+                     :alpha current-note.velocity
+                     :age 0
+                     :lifespan 0.5})
+      ;; Advance to watch for the next note
+      (set next-note-idx (+ next-note-idx))))
+  ;; Update existing visual events and clear dead ones.
+  (for [i (# visual-events) 1 -1]
+    (let [event (. visual-events i)]
+      (set event.age (+ event.age dt))
+      (if (<= event.lifespan event.age)
+          (table.remove visual-events i)))))
+
+(fn love.draw []
+  (let [(width height) (love.graphics.getDimensions)]
+
+    (love.graphics.setCanvas canvas)
+    (love.graphics.setBlendMode :alpha)
+    (love.graphics.setColor 0 0 0 0.03)
+    (love.graphics.rectangle :fill 0 0 width height)
+
+    ;; Render every active note event.
+    (each [_ event (ipairs visual-events)]
+      (let [pct (/ event.age event.lifespan)
+            current-radius (* event.max-radius pct)
+            ;; Fade out linerarly.
+            current-alpha (* event.alpha (- 1 pct))]
+        (love.graphics.setLineWidth 2)
+        ;; Color shifts based on event age.
+        (love.graphics.setColor 0.2 0.6 1.0 current-alpha)
+        (love.graphics.circle :line event.x event.y current-radius)))
+    
+    (love.graphics.setCanvas)
+    
+    (love.graphics.setBlendMode :alpha :premultiplied)
+    (love.graphics.setColor 1 1 1 1)
+    (love.graphics.draw canvas 0 0)))
+
+(fn love.keypressed [key]
+  (when (= key "q")
+    (love.event.quit)))
