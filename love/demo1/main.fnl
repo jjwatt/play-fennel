@@ -58,7 +58,7 @@
                            (* base-radius 6)
                            (* base-radius 2.5))
             lifespan (if (< current-note.midi 45) 2.0 0.8)
-            (x y) (if (= track-num 4)
+            (x y) (if (= track-num 2)
                       (values (/ width 2) (/ height 2))
                       (values (love.math.random (* width 0.2) (* width 0.8))
                               (love.math.random (* height 0.3) (* height 0.7))))]
