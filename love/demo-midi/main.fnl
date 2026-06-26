@@ -34,7 +34,7 @@
 (global visual-events [])
 
 (fn love.load []
-  (love.window.setTitle "Impeachy - Fennel & LOVE2D")
+  (love.window.setTitle "A08 - Fennel & LOVE2D")
   (love.graphics.setLineJoin :bevel)
   (let [(w h) (love.graphics.getDimensions)]
     (set canvas (love.graphics.newCanvas w h)))
