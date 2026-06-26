@@ -94,7 +94,7 @@
       (love.graphics.setLineWidth (+ 1 (* current-volume 8)))
       (love.graphics.setColor r g b 0.8)
       (let [strength (* current-volume 180)
-            frequency 1.2]
+            frequency 1.5]
         (draw-noise-ring cx cy radius frequency strength))
 
       ;; Draw a secondary echo ring shifted 60 degrees down the color wheel
