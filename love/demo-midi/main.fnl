@@ -9,15 +9,15 @@
         {1 {:notes (. song-data.tracks 1 :notes)
             :next-idx 1
             :color [0.1 0.4 0.45]
-            :shape :circle :behavior :orbit}
+            :shape :circle :behavior :shockwave}
          2 {:notes (. song-data.tracks 2 :notes)
             :next-idx 1
             :color [0.85 0.35 0.25]
-            :shape :circle :behavior :shockwave}
+            :shape :circle :behavior :particle}
          3 {:notes (. song-data.tracks 3 :notes)
             :next-idx 1
             :color [0.85 0.65 0.25]
-            :shape :circle :behavior :particle}
+            :shape :circle :behavior :shockwave}
          4 {:notes (. song-data.tracks 4 :notes)
             :next-idx 1
             :color [0.35 0.55 0.4]
@@ -25,7 +25,7 @@
          5 {:notes (. song-data.tracks 5 :notes)
             :next-idx 1
             :color [0.75 0.5 0.6]
-            :shape :square :behavior :particle}
+            :shape :circle :behavior :orbit}
          6 {:notes (. song-data.tracks 6 :notes)
             :next-idx 1
             :color [0.9 0.85 0.75]
@@ -58,7 +58,7 @@
                            (* base-radius 6)
                            (* base-radius 2.5))
             lifespan (if (< current-note.midi 45) 2.0 0.8)
-            (x y) (if (= track-num 2)
+            (x y) (if (= track-num 1)
                       (values (/ width 2) (/ height 2))
                       (values (love.math.random (* width 0.2) (* width 0.8))
                               (love.math.random (* height 0.3) (* height 0.7))))]
