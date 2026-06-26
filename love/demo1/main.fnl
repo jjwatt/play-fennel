@@ -36,8 +36,26 @@
         (math.sqrt (/ sum-squares count))
         0)))
 
+(fn draw-noise-ring [cx cy radius noise-scale noise-strength]
+  (local points [])
+  (local segments 120)
+  (for [i 0 segments]
+    (let [angle (* (/ i segments) (* math.pi 2))
+          sample-x (+ 100 (* (math.cos angle) noise-scale))
+          sample-y (+ 100 (* (math.sin angle) noise-scale))
+          sample-z (* time 1.2)
+          noise-val (love.math.noise sample-x sample-y sample-z)
+          displaced-radius (+ radius (* (- noise-val 0.5) noise-strength))
+          px (+ cx (* (math.cos angle) displaced-radius))
+          py (+ cy (* (math.sin angle) displaced-radius))]
+      (table.insert points px)
+      (table.insert points py)))
+  (love.graphics.setLineJoin :none)
+  (love.graphics.line points)
+  (love.graphics.setLineJoin :bevel))
+
 (fn love.load []
-  (love.window.setTitle "Diglet Demo1 - Model:Cycles, Fennel & LOVE2D")
+  (love.window.setTitle "Diglet Demo1.2-dirty - Model:Cycles, Fennel & LOVE2D")
   (love.graphics.setLineJoin :bevel)
   (let [(w h) (love.graphics.getDimensions)]
     (set canvas (love.graphics.newCanvas w h)))
@@ -75,12 +93,15 @@
           radius (+ 40 (* current-volume 450))]
       (love.graphics.setLineWidth (+ 1 (* current-volume 8)))
       (love.graphics.setColor r g b 0.8)
-      (love.graphics.circle :line cx cy radius)
+      (let [strength (* current-volume 180)
+            frequency 1.2]
+        (draw-noise-ring cx cy radius frequency strength))
 
       ;; Draw a secondary echo ring shifted 60 degrees down the color wheel
-      (let [echo-rgb (hsl->rgb (% (+ base-hue 60) 360) 0.8 (* lightness 0.7))]
+      (let [echo-rgb (hsl->rgb (% (+ base-hue 60) 360) 0.8 (* lightness 0.7))
+            echo-radius (* (+ 40 (* current-volume 450)) 0.7)]
         (love.graphics.setColor (. echo-rgb 1) (. echo-rgb 2) (. echo-rgb 3) 0.4)
-        (love.graphics.circle :line cx cy (* radius 0.7))))
+        (draw-noise-ring cx cy echo-radius 2.5 (* current-volume 100))))
     (love.graphics.setCanvas)
     (love.graphics.setBlendMode :alpha :premultiplied)
     (love.graphics.setColor 1 1 1 1)
