@@ -71,7 +71,7 @@
       (set time (audio-source:tell :seconds))
       (set time (+ time dt)))
   (let [sample-time (+ time audio-latency-nudge)]
-    (set current-volume (get-volume-at sample-time 1024))))
+    (set current-volume (get-volume-at sample-time 2048))))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
