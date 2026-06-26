@@ -3,7 +3,7 @@
 (var audio-data nil)
 (var audio-source nil)
 (var current-volume 0)
-(var audio-latency-nudge 0.5)
+(var audio-latency-nudge 2.5)
 
 (global canvas nil)
 
@@ -64,14 +64,23 @@
     (love.graphics.setBlendMode :alpha)
 
     ;; Dynamic trail
-    (let [clear-alpha (+ 0.01 (* current-volume 0.1))]
+    (let [clear-alpha (+ 0.01 (* current-volume 0.08))]
       (love.graphics.setColor 0 0 0 clear-alpha)
       (love.graphics.rectangle :fill 0 0 width height))
 
-    (let [radius (+ 10 (* current-volume 600))]
-      (love.graphics.setLineWidth 3)
-      (love.graphics.setColor current-volume 0.5 1.0 0.8)
-      (love.graphics.circle :line cx cy radius))
+    (let [base-hue (% (* time 20) 360)
+          lightness (+ 0.4 (* current-volume 0.4))
+          rgb (hsl->rgb base-hue 0.9 lightness)
+          (r g b) (values (. rgb 1) (. rgb 2) (. rgb 3))
+          radius (+ 40 (* current-volume 450))]
+      (love.graphics.setLineWidth (+ 1 (* current-volume 8)))
+      (love.graphics.setColor r g b 0.8)
+      (love.graphics.circle :line cx cy radius)
+
+      ;; Draw a secondary echo ring shifted 60 degrees down the color wheel
+      (let [echo-rgb (hsl->rgb (% (+ base-hue 60) 360) 0.8 (* lightness 0.7))]
+        (love.graphics.setColor (. echo-rgb 1) (. echo-rgb 2) (. echo-rgb 3) 0.4)
+        (love.graphics.circle :line cx cy (* radius 0.7))))
     (love.graphics.setCanvas)
     (love.graphics.setBlendMode :alpha :premultiplied)
     (love.graphics.setColor 1 1 1 1)
