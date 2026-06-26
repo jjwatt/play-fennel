@@ -4,7 +4,7 @@
 (var audio-source nil)
 
 (global canvas nil)
-(global song-data (json.decode (love.filesystem.read "impeachy.json")))
+(global song-data (json.decode (love.filesystem.read "a08.json")))
 (global track-configs
         {1 {:notes (. song-data.tracks 1 :notes)
             :next-idx 1
@@ -41,7 +41,7 @@
   (love.graphics.setCanvas canvas)
   (love.graphics.clear 0 0 0 1)
   (love.graphics.setCanvas)
-  (set audio-source (love.audio.newSource "impeachy.wav" :stream))
+  (set audio-source (love.audio.newSource "a08.wav" :stream))
   (love.audio.play audio-source))
 
 (fn love.update [dt]
