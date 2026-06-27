@@ -90,7 +90,7 @@
     (let [base-hue (% (* time 20) 360)
           lightness (+ 0.4 (* current-volume 0.4))
           rgb (hsl->rgb base-hue 0.9 lightness)
-          (r g b) (values (. rgb 1) (. rgb 2) (. rgb 3))
+          (r g b) (values (unpack rgb))
           radius (+ 40 (* current-volume 450))]
       (love.graphics.setLineWidth (+ 1 (* current-volume 8)))
       (love.graphics.setColor r g b 0.8)
