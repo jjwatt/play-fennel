@@ -4,7 +4,7 @@
 (var audio-source nil)
 
 (global canvas nil)
-(global song-data (json.decode (love.filesystem.read "a08.json")))
+(global song-data (json.decode (love.filesystem.read "diglet_renoise.json")))
 (global track-configs
         {1 {:notes (. song-data.tracks 1 :notes)
             :next-idx 1
@@ -13,15 +13,15 @@
          2 {:notes (. song-data.tracks 2 :notes)
             :next-idx 1
             :color [0.85 0.35 0.25]
-            :shape :circle :behavior :particle}
+            :shape :circle :behavior :shockwave}
          3 {:notes (. song-data.tracks 3 :notes)
             :next-idx 1
             :color [0.85 0.65 0.25]
-            :shape :circle :behavior :shockwave}
+            :shape :noise-ring :behavior :particle}
          4 {:notes (. song-data.tracks 4 :notes)
             :next-idx 1
             :color [0.35 0.55 0.4]
-            :shape :circle :behavior :orbit}
+            :shape :noise-ring :behavior :orbit}
          5 {:notes (. song-data.tracks 5 :notes)
             :next-idx 1
             :color [0.75 0.5 0.6]
@@ -33,15 +33,33 @@
          })
 (global visual-events [])
 
+(fn draw-noise-ring [cx cy radius noise-scale noise-strength]
+  (local points [])
+  (local segments 120)
+  (for [i 0 segments]
+    (let [angle (* (/ i segments) (* math.pi 2))
+          sample-x (+ 100 (* (math.cos angle) noise-scale))
+          sample-y (+ 100 (* (math.sin angle) noise-scale))
+          sample-z (* time 1.2)
+          noise-val (love.math.noise sample-x sample-y sample-z)
+          displaced-radius (+ radius (* (- noise-val 0.5) noise-strength))
+          px (+ cx (* (math.cos angle) displaced-radius))
+          py (+ cy (* (math.sin angle) displaced-radius))]
+      (table.insert points px)
+      (table.insert points py)))
+  (love.graphics.setLineJoin :none)
+  (love.graphics.line points)
+  (love.graphics.setLineJoin :bevel))
+
 (fn love.load []
-  (love.window.setTitle "A08 - Fennel & LOVE2D")
+  (love.window.setTitle "Diglet MIDI Renoise - Fennel & LOVE2D")
   (love.graphics.setLineJoin :bevel)
   (let [(w h) (love.graphics.getDimensions)]
     (set canvas (love.graphics.newCanvas w h)))
   (love.graphics.setCanvas canvas)
   (love.graphics.clear 0 0 0 1)
   (love.graphics.setCanvas)
-  (set audio-source (love.audio.newSource "a08.wav" :stream))
+  (set audio-source (love.audio.newSource "diglet_renoise.wav" :stream))
   (love.audio.play audio-source))
 
 (fn love.update [dt]
@@ -58,8 +76,12 @@
                            (* base-radius 12)
                            (* base-radius 3.5))
             lifespan (if (< current-note.midi 45) 0.6 1.8)
-            (x y) (if (= track-num 1)
+            (x y) (if (or (= track-num 1)
+                          (= track-num 2))
                       (values (/ width 2) (/ height 2))
+                      (or (= track-num 3)
+                          (= track-num 4))
+                      (values (+ 1 (/ width 2)) (+ 200 (/ height 2)))
                       (values (love.math.random (* width 0.2) (* width 0.8))
                               (love.math.random (* height 0.3) (* height 0.7))))]
         (table.insert visual-events
@@ -123,7 +145,11 @@
             (= event.shape :cross)
             (let [len current-radius]
               (love.graphics.line (- event.x len) event.y (+ event.x len) event.y)
-              (love.graphics.line event.x (- event.y len) event.x (+ event.y len))))))
+              (love.graphics.line event.x (- event.y len) event.x (+ event.y len)))
+            (= event.shape :noise-ring)
+            (let [freq 1.5
+                  strength (* event.alpha 120)]
+              (draw-noise-ring event.x event.y current-radius freq strength)))))
 
     (love.graphics.setCanvas)
     
