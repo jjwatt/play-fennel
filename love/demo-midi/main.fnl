@@ -62,6 +62,30 @@
   (set audio-source (love.audio.newSource "diglet_renoise.wav" :stream))
   (love.audio.play audio-source))
 
+
+(fn calc-radius [track-num base-radius]
+  "Calculate max radius based on instrument track."
+  (match track-num
+    (where (or 1 2)) (* base-radius 12)
+    (where (or 4 5)) (* base-radius 5)
+    _                (* base-radius 3.5)))
+
+(fn calc-lifespan [track-num]
+  "Determine visual lifespan in seconds based on track."
+  (match track-num
+    (where (or 1 2)) 0.4
+    3                0.3
+    (where (or 4 5)) 0.8
+    _                0.6))
+
+(fn calc-xy [track-num width height]
+  "Calculate spatial coords based on track role."
+  (match track-num
+    (where (or 1 2)) (values (/ width 2) (/ height 2))
+    (where (or 3 4)) (values (/ width 2) (+ (/ height 2) 150))
+    _                (values (love.math.random (* width 0.2) (* width 0.8))
+                             (love.math.random (* height 0.2) (* height 0.6)))))
+
 (fn love.update [dt]
   (if (and audio-source (audio-source:isPlaying))
       (set time (audio-source:tell :seconds))
@@ -72,18 +96,9 @@
       (let [current-note (. config.notes config.next-idx)
             (width height) (love.graphics.getDimensions)
             base-radius (- current-note.midi 20)
-            max-radius (if (< current-note.midi 45)
-                           (* base-radius 12)
-                           (* base-radius 3.5))
-            lifespan (if (< current-note.midi 45) 0.6 1.8)
-            (x y) (if (or (= track-num 1)
-                          (= track-num 2))
-                      (values (/ width 2) (/ height 2))
-                      (or (= track-num 3)
-                          (= track-num 4))
-                      (values (+ 1 (/ width 2)) (+ 200 (/ height 2)))
-                      (values (love.math.random (* width 0.2) (* width 0.8))
-                              (love.math.random (* height 0.3) (* height 0.7))))]
+            max-radius (calc-radius track-num base-radius)
+            lifespan (calc-lifespan track-num)
+            (x y) (calc-xy track-num width height)]
         (table.insert visual-events
                       {:x x
                        :y y
@@ -113,7 +128,7 @@
 
     (love.graphics.setCanvas canvas)
     (love.graphics.setBlendMode :alpha)
-    (love.graphics.setColor 0 0 0 0.03)
+    (love.graphics.setColor 0 0 0 0.06)
     (love.graphics.rectangle :fill 0 0 width height)
 
     ;; Render every active note event.
@@ -124,32 +139,35 @@
             current-alpha (* event.alpha (- 1 pct))
             line-width (* 4 (- 1 pct))
             (r g b) (values (. event.color 1) (. event.color 2) (. event.color 3))]
+
+        ;; Default line properties.
         (love.graphics.setLineWidth line-width)
-
-        ;; Color shifts based on event age.
         (love.graphics.setColor r g b current-alpha)
-
-        (if (= event.behavior :shockwave)
-            (let [dynamic-pct (math.sqrt (/ event.age event.lifespan))
-                  current-radius (* event.max-radius dynamic-pct)
-                  current-alpha (* event.alpha (- 1 (/ event.age event.lifespan)))]
-              (love.graphics.setLineWidth (* 8 (- 1 dynamic-pct)))
-              (love.graphics.setColor r g b current-alpha)
-              (love.graphics.circle :line event.x event.y current-radius)
-              (love.graphics.circle :line event.x event.y (* current-radius 0.85)))
-            (= event.shape :circle)
-            (love.graphics.circle :line event.x event.y current-radius)
-            (= event.shape :square)
-            (let [size (* current-radius 1.5)]
-              (love.graphics.rectangle :line (- event.x (/ size 2)) (- event.y (/ size 2)) size size))
-            (= event.shape :cross)
-            (let [len current-radius]
-              (love.graphics.line (- event.x len) event.y (+ event.x len) event.y)
-              (love.graphics.line event.x (- event.y len) event.x (+ event.y len)))
-            (= event.shape :noise-ring)
-            (let [freq 1.5
-                  strength (* event.alpha 120)]
-              (draw-noise-ring event.x event.y current-radius freq strength)))))
+        (match [event.behavior event.shape]
+          [:shockwave _]
+          ;; shockwave always implies circle for now
+          (let [dynamic-pct (math.sqrt pct)
+                shock-radius (* event.max-radius dynamic-pct)
+                shock-alpha (* event.alpha (- 1 pct))]
+            (love.graphics.setLineWidth (* 8 (- 1 dynamic-pct)))
+            (love.graphics.setColor r g b shock-alpha)
+            (love.graphics.circle :line event.x event.y shock-radius)
+            (love.graphics.circle :line event.x event.y (* shock-radius 0.85)))
+          [_ :circle]
+          (love.graphics.circle :line event.x event.y current-radius)
+          [_ :square]
+          (let [size (* current-radius 1.5)]
+            (love.graphics.rectangle :line (- event.x (/ size 2)) (- event.y (/ size 2))))
+          [_ :cross]
+          (let [len current-radius]
+            (love.graphics.line (- event.x len) event.y (+ event.x len) event.y)
+            (love.graphics.line event.x (- event.y len) event.x (+ event.y len)))
+          [_ :noise-ring]
+          (let [frequency 1.5
+                strength (* event.alpha 120)]
+            (draw-noise-ring event.x event.y current-radius frequency strength))
+          _
+          (love.graphics.circle :line event.x event.y current-radius))))
 
     (love.graphics.setCanvas)
     
