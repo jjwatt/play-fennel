@@ -52,7 +52,7 @@
   (love.graphics.setLineJoin :bevel))
 
 (fn love.load []
-  (love.window.setTitle "Diglet MIDI Renoise - Fennel & LOVE2D")
+  (love.window.setTitle "Digr MIDI Renoise - Fennel & LOVE2D")
   (love.graphics.setLineJoin :bevel)
   (let [(w h) (love.graphics.getDimensions)]
     (set canvas (love.graphics.newCanvas w h)))
@@ -82,7 +82,7 @@
   "Calculate spatial coords based on track role."
   (match track-num
     (where (or 1 2)) (values (/ width 2) (/ height 2))
-    (where (or 3 4)) (values (/ width 2) (+ (/ height 2) 150))
+    (where (or 4 5)) (values (/ width 2) (+ (/ height 2) 0))
     _                (values (love.math.random (* width 0.2) (* width 0.8))
                              (love.math.random (* height 0.2) (* height 0.6)))))
 
@@ -114,12 +114,13 @@
   (for [i (# visual-events) 1 -1]
     (let [event (. visual-events i)]
       (set event.age (+ event.age dt))
-      (if (= event.behavior :orbit)
-          (let [angle (* event.age 10)]
+      (match [event.behavior]
+        :orbit
+        (let [angle (* event.age 10)]
             (set event.x (+ event.x (* (math.cos angle) 2)))
             (set event.y (+ event.y (* (math.sin angle) 2))))
-          (= event.behavior :particle)
-          (set event.y (- event.y (* dt 150))))
+        :particle
+        (set event.y (- event.y (* dt 150))))
       (if (<= event.lifespan event.age)
           (table.remove visual-events i)))))
 
