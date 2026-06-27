@@ -29,7 +29,7 @@
          6 {:notes (. song-data.tracks 6 :notes)
             :next-idx 1
             :color [0.9 0.85 0.75]
-            :shape :circle :behavior :shockwave}
+            :shape :square :behavior :particle}
          })
 (global visual-events [])
 
@@ -158,7 +158,7 @@
           (love.graphics.circle :line event.x event.y current-radius)
           [_ :square]
           (let [size (* current-radius 1.5)]
-            (love.graphics.rectangle :line (- event.x (/ size 2)) (- event.y (/ size 2))))
+            (love.graphics.rectangle :line (- event.x (/ size 2)) (- event.y (/ size 2)) size size))
           [_ :cross]
           (let [len current-radius]
             (love.graphics.line (- event.x len) event.y (+ event.x len) event.y)
