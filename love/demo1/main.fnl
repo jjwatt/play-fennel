@@ -1,3 +1,4 @@
+(local lume (require :lume))
 
 (var time 0)
 (var audio-data nil)
@@ -99,9 +100,13 @@
 
       ;; Draw a secondary echo ring shifted 60 degrees down the color wheel
       (let [echo-rgb (hsl->rgb (% (+ base-hue 60) 360) 0.8 (* lightness 0.7))
-            echo-radius (* (+ 40 (* current-volume 450)) 0.7)]
-        (love.graphics.setColor (. echo-rgb 1) (. echo-rgb 2) (. echo-rgb 3) 0.4)
-        (draw-noise-ring cx cy echo-radius 2.5 (* current-volume 100))))
+            echo-radius (* (+ 40 (* current-volume 450)) 0.7)
+            echo-rgb2 (hsl->rgb (% (+ (. echo-rgb 1) 90) 360) 0.8 (* lightness 0.7))
+            echo-radius2 (* (+ 40 (* current-volume 450)) 0.5)]
+        (love.graphics.setColor (unpack (lume.concat echo-rgb [0.4])))
+        (draw-noise-ring cx cy echo-radius 2.5 (* current-volume 100))
+        (love.graphics.setColor (unpack (lume.concat echo-rgb2 [0.4])))
+        (draw-noise-ring cx cy echo-radius2 2.5 (* current-volume 50))))
     (love.graphics.setCanvas)
     (love.graphics.setBlendMode :alpha :premultiplied)
     (love.graphics.setColor 1 1 1 1)
