@@ -82,7 +82,7 @@
   "Calculate spatial coords based on track role."
   (match track-num
     (where (or 1 2)) (values (/ width 2) (/ height 2))
-    (where (or 4 5)) (values (/ width 2) (+ (/ height 2) 0))
+    (where (or 4 5)) (values (/ width 2) (+ (/ height 2) 50))
     _                (values (love.math.random (* width 0.2) (* width 0.8))
                              (love.math.random (* height 0.2) (* height 0.6)))))
 
