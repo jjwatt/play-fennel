@@ -29,7 +29,7 @@
          6 {:notes (. song-data.tracks 6 :notes)
             :next-idx 1
             :color [0.9 0.85 0.75]
-            :shape :square :behavior :particle}
+            :shape :circle :behavior :particle}
          7 {:notes (. song-data.tracks 7 :notes)
             :next-idx 1
             :color [0.85 0.95 0.25]
