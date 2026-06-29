@@ -87,10 +87,10 @@
 (fn calc-lifespan [track-num]
   "Determine visual lifespan in seconds based on track."
   (match track-num
-    (where (or 1 2)) 0.4
-    3                0.3
-    (where (or 4 5)) 0.8
-    _                0.6))
+    (where (or 1 2))   0.4
+    3                  0.3
+    (where (or 4 5 7)) 0.8
+    _                  0.6))
 
 (fn calc-xy [track-num width height]
   "Calculate spatial coords based on track role."
