@@ -2,6 +2,9 @@
 
 (var time 0)
 (var audio-source nil)
+(var shake-time 0)
+(var shake-intensity 0)
+(var bg-wave-offset 0)
 
 (global canvas nil)
 (global song-data (json.decode (love.filesystem.read "diglet_renoise.json")))
@@ -55,17 +58,23 @@
   (love.graphics.line points)
   (love.graphics.setLineJoin :bevel))
 
-(fn love.load []
-  (love.window.setTitle "Digr MIDI Renoise - Fennel & LOVE2D")
-  (love.graphics.setLineJoin :bevel)
-  (let [(w h) (love.graphics.getDimensions)]
-    (set canvas (love.graphics.newCanvas w h)))
-  (love.graphics.setCanvas canvas)
-  (love.graphics.clear 0 0 0 1)
-  (love.graphics.setCanvas)
-  (set audio-source (love.audio.newSource "diglet_renoise.wav" :stream))
-  (love.audio.play audio-source))
+(fn draw-background-waves [width height]
+  "Draws layered, fluid sine/noise horizontal waves to the canvas."
+  (love.graphics.setLineWidth 1)
 
+  ;; Draw 5 wave lines stacked vertically.
+  (for [w 1 5]
+    (let [points []
+          steps 40
+          base-y (+ (* height 0.2) (* w (* height 0.125)))]
+      (for [i 0 steps]
+        (let [x (* (/ i steps) width)
+              n-val (love.math.noise (* i 0.1) (* w 10) bg-wave-offset)
+              y (+ base-y (* (- n-val 0.5) 80))]
+          (table.insert points x)
+          (table.insert points y)))
+      (love.graphics.setColor 0.3 0.5 0.4 (* 0.08 (/ w 5)))
+      (love.graphics.line points))))
 
 (fn calc-radius [track-num base-radius]
   "Calculate max radius based on instrument track."
@@ -86,9 +95,20 @@
   "Calculate spatial coords based on track role."
   (match track-num
     (where (or 1 2)) (values (/ width 2) (/ height 2))
-    (where (or 4 5)) (values (/ width 2) (+ (/ height 2) 50))
+    (where (or 4 5)) (values (/ width 2) (+ (/ height 2) 0))
     _                (values (love.math.random (* width 0.2) (* width 0.8))
                              (love.math.random (* height 0.2) (* height 0.6)))))
+
+(fn love.load []
+  (love.window.setTitle "Digr MIDI Renoise - Fennel & LOVE2D")
+  (love.graphics.setLineJoin :bevel)
+  (let [(w h) (love.graphics.getDimensions)]
+    (set canvas (love.graphics.newCanvas w h)))
+  (love.graphics.setCanvas canvas)
+  (love.graphics.clear 0 0 0 1)
+  (love.graphics.setCanvas)
+  (set audio-source (love.audio.newSource "diglet_renoise.wav" :stream))
+  (love.audio.play audio-source))
 
 (fn love.update [dt]
   (if (and audio-source (audio-source:isPlaying))
@@ -113,6 +133,9 @@
                        :behavior config.behavior
                        :age 0
                        :lifespan lifespan})
+        (when (or (= track-num 1) (= track-num 7))
+          (set shake-time 0.5)
+          (set shake-intensity 10))
         (tset config :next-idx (+ config.next-idx 1)))))
   ;; Update existing visual events and clear dead ones.
   (for [i (# visual-events) 1 -1]
@@ -126,15 +149,25 @@
         :particle
         (set event.y (- event.y (* dt 150))))
       (if (<= event.lifespan event.age)
-          (table.remove visual-events i)))))
+          (table.remove visual-events i))))
+  (if (< 0 shake-time)
+      (do
+        (set shake-time (- shake-time dt))
+        (set shake-intensity (* shake-intensity 0.9)))
+      (set shake-intensity 0))
+  (set bg-wave-offset (+ bg-wave-offset (* dt 0.5))))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)]
 
     (love.graphics.setCanvas canvas)
     (love.graphics.setBlendMode :alpha)
+
+    ;; Standard trail clear
     (love.graphics.setColor 0 0 0 0.06)
     (love.graphics.rectangle :fill 0 0 width height)
+
+    (draw-background-waves width height)
 
     ;; Render every active note event.
     (each [_ event (ipairs visual-events)]
@@ -175,10 +208,17 @@
           (love.graphics.circle :line event.x event.y current-radius))))
 
     (love.graphics.setCanvas)
+
+    (love.graphics.push)
+    (when (< 0 shake-time)
+      (let [dx (love.math.random (- shake-intensity) shake-intensity)
+            dy (love.math.random (- shake-intensity) shake-intensity)]
+        (love.graphics.translate dx dy)))
     
     (love.graphics.setBlendMode :alpha :premultiplied)
     (love.graphics.setColor 1 1 1 1)
-    (love.graphics.draw canvas 0 0)))
+    (love.graphics.draw canvas 0 0)
+    (love.graphics.pop)))
 
 (fn love.keypressed [key]
   (when (= key "q")
