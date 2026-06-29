@@ -41,6 +41,7 @@
 (global visual-events [])
 
 (fn draw-noise-ring [cx cy radius noise-scale noise-strength]
+  "Draws a noisy ring."
   (local points [])
   (local segments 120)
   (for [i 0 segments]
@@ -135,7 +136,7 @@
                        :lifespan lifespan})
         (when (or (= track-num 1) (= track-num 7))
           (set shake-time 0.2)
-          (set shake-intensity 20))
+          (set shake-intensity 30))
         (tset config :next-idx (+ config.next-idx 1)))))
   ;; Update existing visual events and clear dead ones.
   (for [i (# visual-events) 1 -1]
