@@ -100,7 +100,7 @@
                              (love.math.random (* height 0.2) (* height 0.6)))))
 
 (fn love.load []
-  (love.window.setTitle "Digr MIDI Renoise - Fennel & LOVE2D")
+  (love.window.setTitle "Digletr - Renoise, Fennel & LOVE2D")
   (love.graphics.setLineJoin :bevel)
   (let [(w h) (love.graphics.getDimensions)]
     (set canvas (love.graphics.newCanvas w h)))
@@ -134,8 +134,8 @@
                        :age 0
                        :lifespan lifespan})
         (when (or (= track-num 1) (= track-num 7))
-          (set shake-time 0.5)
-          (set shake-intensity 10))
+          (set shake-time 0.2)
+          (set shake-intensity 20))
         (tset config :next-idx (+ config.next-idx 1)))))
   ;; Update existing visual events and clear dead ones.
   (for [i (# visual-events) 1 -1]
