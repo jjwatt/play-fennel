@@ -156,7 +156,9 @@
         (set shake-time (- shake-time dt))
         (set shake-intensity (* shake-intensity 0.9)))
       (set shake-intensity 0))
-  (set bg-wave-offset (+ bg-wave-offset (* dt 0.5))))
+  (set bg-wave-offset (+ bg-wave-offset (* dt 0.5)))
+  (if (or (not audio-source) (not (audio-source:isPlaying)))
+      (love.event.quit)))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)]
