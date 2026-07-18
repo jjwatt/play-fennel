@@ -58,9 +58,10 @@
 (fn _G.lyte.tick [dt width height]
   (lyte.draw_text "Hello World" 0 0)
   (lyte.draw_rect 40 40 40 40)
+  (lyte.set_color 1 1 0 1)
   (for [i 1 4]
     (let [x (* i (/ width 7))
           y (* i (/ height 7))]
       (lyte.draw_rect x y (/ width 3) (/ height 3))))
-  (lyte.draw_rect (/ width 7) (/ height 7) (/ width 3) (/ height 3))
+  (lyte.reset_color)
 )
