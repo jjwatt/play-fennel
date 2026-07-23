@@ -43,7 +43,7 @@
     (tset :random-fn love.math.random)))
 
 (fn stateful-love [draw-fn]
-  "Creates a clean state enclosure keeping tracking vars safe from global pollution."
+  "Creates a clean state enclosure keeping state in a closure."
   (var state 0)
   (fn [...]
     (set state (draw-fn (with-love {:smooth-noise-state state}) ...))))

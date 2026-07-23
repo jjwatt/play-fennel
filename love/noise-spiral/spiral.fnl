@@ -71,7 +71,7 @@
   Mutates primitive variables locally across iteration steps to entirely prevent
   GC table-allocation thrashing inside the core rendering frame.
   Returns: (values final-smooth-noise-state)"
-  (let [radius-scale ((or cfg.radius-scale-fn (fn [] 1.0)) t cfg.noise-fn)
+  (let [radius-scale ((or cfg.radius-scale-fn #0) t cfg.noise-fn)
         dynamic-max-radius (* cfg.max-radius radius-scale)
         total-loops 10
         max-angle (* 360 total-loops)
@@ -102,7 +102,7 @@
             (set prev-x x)
             (set prev-y y)))))
     ;; Return the final smooth value out of the drawing function
-    (values smooth)))
+    smooth))
 
 (fn clj-merge [target source]
   "Shallow merges two dictionaries into a new table context.
