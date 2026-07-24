@@ -65,41 +65,40 @@
     (+ base-radius (* radius-noise noise-factor) path-shredder)))
 
 (fn draw-spiral [opts cfg center-x center-y max-radius t]
-  "Iterates from 0 to max-angle, drawing line segments to form a generative spiral.
-  Mutates primitive variables locally across iteration steps to entirely prevent
-  GC table-allocation thrashing inside the core rendering frame.
-  Returns: (values final-smooth-noise-state)"
-  (let [radius-scale-fn (or opts.radius-scale-fn #0)
-        radius-scale (radius-scale-fn t cfg.noise-fn)
+  "Iterates from 0 to max-angle, drawing line segments to form a generative spiral."
+  (let [{: noise-fn : random-fn : set-color : draw-line : smooth-noise-state} cfg
+        {: radius-scale-fn : radius-noise : color-scale : angle-jitter-scale
+         : color-speed : needs-smooth-state : noise-strategy} opts
+        radius-scale-fn (or radius-scale-fn #1.0)
+        radius-scale (radius-scale-fn t noise-fn)
         dynamic-max-radius (* max-radius radius-scale)
         total-loops 10
         max-angle (* 360 total-loops)
         step-size 5
         growth-rate (/ dynamic-max-radius max-angle)]
-    ;; Initialize our loop trackers as mutable local primitives
-    (var smooth (if opts.needs-smooth-state (or cfg.smooth-noise-state 0) 0))
+    (var smooth (if needs-smooth-state (or smooth-noise-state 0) 0))
     (var base-radius 0)
-    (var radius-noise-val opts.radius-noise)
+    (var radius-noise-val radius-noise)
     (var prev-x false)
     (var prev-y false)
     (for [angle 0 max-angle step-size]
-      (let [color-phase (+ (/ angle opts.color-scale) (* t opts.color-speed))
+      (let [color-phase (+ (/ angle color-scale) (* t color-speed))
             (r g b a) (get-palette-color color-phase)
-            (next-smooth spikes combined) (opts.noise-strategy cfg.noise-fn cfg.random-fn t angle base-radius smooth)
-            this-radius (next-radius cfg.random-fn base-radius radius-noise-val spikes angle t)
-            angle-jitter (* opts.angle-jitter-scale combined)
+            (next-smooth spikes combined) (noise-strategy noise-fn random-fn t angle base-radius smooth)
+            this-radius (next-radius random-fn base-radius radius-noise-val spikes angle t)
+            angle-jitter (* angle-jitter-scale combined)
             radians (rad (+ angle angle-jitter))
             x (+ center-x (* this-radius (cos radians)))
             y (+ center-y (* this-radius (sin radians)))]
-        (cfg.set-color r g b a)
+        (set-color r g b a)
         (when prev-x
-          (cfg.draw-line x y prev-x prev-y))
+          (draw-line x y prev-x prev-y))
         (set radius-noise-val (+ radius-noise-val 0.09))
         (set smooth next-smooth)
         (set base-radius (+ base-radius (* growth-rate step-size)))
         (set prev-x x)
         (set prev-y y)))
-    ;; Return the final smooth value out of the drawing function
+    ;; Return the final smooth value out of the drawing function.
     smooth))
 
 (fn make-spiral [options]
