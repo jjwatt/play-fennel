@@ -34,26 +34,22 @@
           vibrato (+ 1.0 (* 0.02 (math.sin (* time 8))))]
       (bass-drone:setPitch (* pitch-ratio vibrato)))))
 
-(fn with-love [config]
-  "Add love functions to config map."
-  (doto config
-    (tset :draw-line love.graphics.line)
-    (tset :set-color love.graphics.setColor)
-    (tset :noise-fn love.math.noise)
-    (tset :random-fn love.math.random)))
+(local love-config
+       {:draw-line love.graphics.line
+        :set-color love.graphics.setColor
+        :noise-fn love.math.noise
+        :random-fn love.math.random})
 
 (fn stateful-love [draw-fn]
   "Creates a clean state enclosure keeping state in a closure."
   (var state 0)
   (fn [...]
-    (set state (draw-fn (with-love {:smooth-noise-state state}) ...))))
+    (set love-config.smooth-noise-state state)
+    (set state (draw-fn love-config ...))))
 
-(macro defspiral [name spiral-fn]
-  `(local ,name (stateful-love ,spiral-fn)))
-
-(defspiral draw-12 spiral.draw-noise-spiral12)
-(defspiral draw-13 spiral.draw-noise-spiral13)
-(defspiral draw-14 spiral.draw-noise-spiral14)
+(local draw-12 (stateful-love spiral.draw-noise-spiral12))
+(local draw-13 (stateful-love spiral.draw-noise-spiral13))
+(local draw-14 (stateful-love spiral.draw-noise-spiral14))
 
 (fn love.draw []
   (let [(width height) (love.graphics.getDimensions)
