@@ -48,20 +48,15 @@
       (lyte.draw_point x y))))
 
 (fn _G.lyte.tick [dt width height]
-  (lyte.cls 0 0 0 1)
-  (lyte.set_color 1 0 0 0.3)
-  (for [i 1 4]
-    (let [x (* i (/ width 7))
-          y (* i (/ height 7))]
-      (lyte.draw_rect x y (/ width 3) (/ height 3)))))
-
-(fn _G.lyte.tick [dt width height]
-  (lyte.draw_text "Hello World" 0 0)
-  (lyte.draw_rect 40 40 40 40)
+  ;; (lyte.draw_text "Hello World" 0 0)
+  ;; (lyte.draw_rect 40 40 40 40)
   (lyte.set_color 1 1 0 1)
-  (for [i 1 4]
-    (let [x (* i (/ width 7))
-          y (* i (/ height 7))]
-      (lyte.draw_rect x y (/ width 3) (/ height 3))))
+  ;; (for [i 1 4]
+  ;;   (let [x (* i (/ width 7))
+  ;;         y (* i (/ height 7))]
+  ;;     (lyte.draw_rect x y (/ width 3) (/ height 3))))
+  ;;  (my-curve)
+  ;; This breaks unless I end with lyte.reset_color
+  (my-eight-eleven width height)
   (lyte.reset_color)
 )
